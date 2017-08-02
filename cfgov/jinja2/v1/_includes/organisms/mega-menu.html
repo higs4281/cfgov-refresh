@@ -1,4 +1,4 @@
-{% import '_vars-mega-menu.html' as vars with context %}
+{% import 'molecules/featured-menu-content.html' as featured_menu_content %}
 {% set base_class = 'o-mega-menu' %}
 
 {# ==========================================================================
@@ -43,12 +43,13 @@
    ========================================================================== #}
 
 {% macro _nav_list( nav_depth, nav_groups ) %}
-{%- for group in nav_groups %}
+{%- for nav_group in nav_groups %}
+{% set group = nav_group.value %}
 <div class="{{ _classes( nav_depth, '-list' ) }}">
-    {% if group.title %} 
-    <h3 class="h5 {{' hide-title' if group.hide_title else ''}}"
-        {% if group.hide_title %} aria-hidden="true"{% endif %}>
-        {{group.title | safe}}
+    {% if group.group_title %} 
+    <h3 class="h5 {{' hide-title' if group.hide_group_title else ''}}"
+        {% if group.hide_group_title %} aria-hidden="true"{% endif %}>
+        {{group.group_title | safe}}
     </h3>
     {% endif %}
     <ul class="m-list
@@ -62,21 +63,28 @@
     {%- endif %}
 
     {%- for item in group.nav_items %}
+    {% if item.page_link %}
+        {% set url = item.page_link.url %}
+    {% elif item.external_link %}
+        {% set url = item.external_link %}
+    {% else %}
+        {% set url = '' %}
+    {% endif %}
     <li class="m-list_item
                {{ _classes( nav_depth, '-item' ) }}"
         {{ 'data-js-hook=behavior_flyout-menu' if item.nav_groups | count > 0 else '' }}>
         {# TODO: Disable link (or overview link) of page user is currently on (on mobile). #}
-        <a class="{{ 'u-link__disabled' if item.url == '' else '' }}
+        <a class="{{ 'u-link__disabled' if url == '' else '' }}
                   {{ _classes( nav_depth, '-link' ) }}
                   {{ _classes( nav_depth, '-link__has-children' ) if item.nav_groups | count > 0 else '' }}
                   {{ _classes( nav_depth, '-link__current' ) if item.url == request.path else '' }}"
-           {{ '' if item.url == '' else 'href=' + item.url | e }}
+           {{ '' if url == '' else 'href=' + url | e }}
            {{ 'data-js-hook=behavior_flyout-menu_trigger' if item.nav_groups | count > 0 else '' }}
            {{ 'aria-pressed=false' if item.nav_groups | count > 0 else '' }}>
             {{ item.text }}
         </a>
         {% if item.nav_groups | count > 0 %}
-            {{ _nav( nav_depth | int + 1, item.nav_groups, item.text ~ ' Overview', item.url, vars.media_items, item.footer if item.footer else '' ) }}
+            {{ _nav( nav_depth | int + 1, item.nav_groups, item.text ~ ' Overview', url, item.media_item if item.media_item else '', item.footer if item.footer else '' ) }}
         {% endif %}
     </li>
     {%- endfor %}
@@ -107,7 +115,7 @@
 
    ========================================================================== #}
 
-{% macro _nav( nav_depth, nav_groups, nav_overview, nav_overview_url, media_items, footer ) %}
+{% macro _nav( nav_depth, nav_groups, nav_overview, nav_overview_url, media, footer ) %}
 <div class="{{ _classes( nav_depth ) }}
             u-hidden-overflow"
      aria-expanded="false"
@@ -143,17 +151,17 @@
                 </div>
                {% if footer %}
           <div class="nav_footer">
-            {% for item in footer %}
-            <p>{{ item | safe }}</p>
-            {% endfor %}
+            {{ footer | safe }}
           </div>
          {% endif %}
             </div>
-            {% for parent_name, fmc in media_items %}
-                {% if parent_name + ' Overview' == nav_overview %}
-                {{ fmc }}
+            {% if media %}
+                {% for block in media %}
+                {% if block.block_type == 'featured_content' %}
+                    {{ featured_menu_content.render(block.value)}}
                 {% endif %}
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
          
         {# Close Wrapper if needed #}
         {{ '</div>' | safe if nav_depth > 1 else '' }}
@@ -178,6 +186,7 @@
    Creates a mega menu primary navigation menu.
 
    ========================================================================== #}
+{% macro mega_menu( menu_items ) %}
 <nav class="{{ base_class }}
             u-hidden"
      data-js-hook="behavior_flyout-menu"
@@ -190,6 +199,7 @@
     </button>
     {# Create a root menu at depth one.
        This is the 1st level of a 3-level menu. #}
-    {{ _nav( 1, vars.nav_groups ) }}
+    {{ _nav( 1, menu_items ) }}
     <button class="{{ base_class ~ '_tab-trigger' }}" aria-hidden="true"></button>
 </nav>
+{% endmacro %}

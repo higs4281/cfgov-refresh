@@ -8,7 +8,8 @@ from taggit.models import TaggedItemBase
 from taggit.managers import TaggableManager
 
 from django.utils.encoding import python_2_unicode_compatible
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
@@ -16,7 +17,7 @@ from wagtail.wagtailsearch import index
 from wagtail.wagtailsnippets.blocks import SnippetChooserBlock
 from wagtail.wagtailsnippets.models import register_snippet
 
-from v1.atomic_elements import molecules
+from v1.atomic_elements import atoms, molecules
 
 
 class ReusableTextChooserBlock(SnippetChooserBlock):
@@ -171,3 +172,84 @@ class Resource(ClusterableModel):
 
     class Meta:
         ordering = ('order', 'title')
+
+@python_2_unicode_compatible
+@register_snippet
+class MenuItem(models.Model):
+
+    text = models.CharField(max_length=255)
+
+    page_link = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        on_delete=models.SET_NULL,
+        blank=True,
+        related_name='+',
+        help_text='Choose a Wagtail page.'
+    )
+
+    external_link = models.CharField(
+        max_length=1000, 
+        blank=True,
+        help_text="Enter url for page outside Wagtail.")
+
+    order = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text='Determines order in which menu items appear in nav.'
+    )
+
+    footer = RichTextField(blank=True)
+
+    media_item = StreamField([
+        ('featured_content', blocks.StructBlock([
+            ('is_horizontal', blocks.BooleanBlock(required=False)),
+            ('link', atoms.Hyperlink(required=False)),
+            ('body', blocks.RichTextBlock(required=False)),
+            ('image', atoms.ImageBasic(required=False)),
+        ]))
+    ])
+
+    nav_groups = StreamField([
+        ('nav_group', blocks.StructBlock([
+            ('group_title', blocks.CharBlock(required=False)),
+            ('hide_group_title', blocks.BooleanBlock(required=False)),
+            ('nav_items', blocks.ListBlock(
+                blocks.StructBlock([
+                    ('text', blocks.CharBlock(required=True)),
+                    ('page_link', blocks.PageChooserBlock(required=False)),
+                    ('external_link', blocks.CharBlock(default='#', required=False)),
+                    ('nav_groups', 
+                        blocks.StreamBlock([
+                            ('nav_group', 
+                                blocks.StructBlock([
+                                    ('group_title', blocks.CharBlock(required=False)),
+                                    ('hide_group_title', blocks.BooleanBlock(required=False)),
+                                    ('nav_items', blocks.ListBlock(
+                                        blocks.StructBlock([
+                                            ('text', blocks.CharBlock(required=True)),
+                                            ('page_link', blocks.PageChooserBlock(required=False)),
+                                            ('external_link', blocks.CharBlock(default='#', required=False)),
+                                        ])
+                                    ))
+                                ])
+                            )
+                        ])
+                    )
+                ])
+            ))
+        ]))
+    ], blank=True)
+
+    panels = [
+        FieldPanel('text'),
+        PageChooserPanel('page_link'),
+        FieldPanel('external_link'),
+        FieldPanel('order'),
+        FieldPanel('footer'),
+        StreamFieldPanel('nav_groups'),
+        StreamFieldPanel('media_item'),
+    ]
+
+    def __str__(self):
+        return self.text

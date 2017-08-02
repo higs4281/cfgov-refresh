@@ -224,6 +224,12 @@ class CFGOVPage(Page):
                 return [ancestor for ancestor in ancestors[i + 1:]]
         return []
 
+    def get_menu_items(self, request):
+        from v1.models.snippets import MenuItem
+        menu_items = [ menu_item for menu_item in MenuItem.objects.all().order_by('order')]
+        return [{'value':{'nav_items': menu_items}}] 
+
+
     def get_appropriate_descendants(self, hostname, inclusive=True):
         return CFGOVPage.objects.live().descendant_of(
             self, inclusive)
