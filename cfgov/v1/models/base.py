@@ -51,6 +51,7 @@ class BaseCFGOVPageManager(PageManager):
     def get_queryset(self):
         return PageQuerySet(self.model).order_by('path')
 
+
 CFGOVPageManager = BaseCFGOVPageManager.from_queryset(PageQuerySet)
 
 
@@ -226,9 +227,9 @@ class CFGOVPage(Page):
 
     def get_menu_items(self, request):
         from v1.models.snippets import MenuItem
-        menu_items = [ menu_item for menu_item in MenuItem.objects.all().order_by('order')]
-        return [{'value':{'nav_items': menu_items}}] 
-
+        menu_items = [menu_item for menu_item in
+                      MenuItem.objects.all().order_by('order')]
+        return [{'value': {'nav_items': menu_items}}]
 
     def get_appropriate_descendants(self, hostname, inclusive=True):
         return CFGOVPage.objects.live().descendant_of(

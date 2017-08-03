@@ -8,7 +8,8 @@ from taggit.models import TaggedItemBase
 from taggit.managers import TaggableManager
 
 from django.utils.encoding import python_2_unicode_compatible
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, StreamFieldPanel, PageChooserPanel
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel, StreamFieldPanel, PageChooserPanel)
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
@@ -173,6 +174,7 @@ class Resource(ClusterableModel):
     class Meta:
         ordering = ('order', 'title')
 
+
 @python_2_unicode_compatible
 @register_snippet
 class MenuItem(models.Model):
@@ -189,7 +191,7 @@ class MenuItem(models.Model):
     )
 
     external_link = models.CharField(
-        max_length=1000, 
+        max_length=1000,
         blank=True,
         help_text="Enter url for page outside Wagtail.")
 
@@ -218,24 +220,29 @@ class MenuItem(models.Model):
                 blocks.StructBlock([
                     ('text', blocks.CharBlock(required=True)),
                     ('page_link', blocks.PageChooserBlock(required=False)),
-                    ('external_link', blocks.CharBlock(default='#', required=False)),
-                    ('nav_groups', 
+                    ('external_link', blocks.CharBlock(
+                        default='#', required=False)),
+                    ('nav_groups',
                         blocks.StreamBlock([
-                            ('nav_group', 
+                            ('nav_group',
                                 blocks.StructBlock([
-                                    ('group_title', blocks.CharBlock(required=False)),
-                                    ('hide_group_title', blocks.BooleanBlock(required=False)),
+                                    ('group_title', blocks.CharBlock(
+                                        required=False)),
+                                    ('hide_group_title', blocks.BooleanBlock(
+                                        required=False)),
                                     ('nav_items', blocks.ListBlock(
                                         blocks.StructBlock([
-                                            ('text', blocks.CharBlock(required=True)),
-                                            ('page_link', blocks.PageChooserBlock(required=False)),
-                                            ('external_link', blocks.CharBlock(default='#', required=False)),
+                                            ('text', blocks.CharBlock(
+                                                required=True)),
+                                            ('page_link',
+                                                blocks.PageChooserBlock(
+                                                    required=False)),
+                                            ('external_link', blocks.CharBlock(
+                                                default='#', required=False)),
                                         ])
                                     ))
-                                ])
-                            )
-                        ])
-                    )
+                                ]))
+                        ]))
                 ])
             ))
         ]))
