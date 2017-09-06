@@ -1,0 +1,12 @@
+codecov:
+  branch: master
+  comment: off
+  notify:
+    require_ci_to_pass: yes
+  status:
+    project:
+      default:
+        threshold: 0%
+        if_not_found: success
+    patch:
+      threshold: 0%
