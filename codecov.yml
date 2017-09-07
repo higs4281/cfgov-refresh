@@ -8,5 +8,8 @@ codecov:
       default:
         threshold: 0%
         if_not_found: success
+        base: pr
     patch:
-      threshold: 0%
+      default:
+        threshold: 0%
+        base: pr
