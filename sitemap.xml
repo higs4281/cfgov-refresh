@@ -28,22 +28,6 @@
     
         
     <url>
-     <loc>/ask-cfpb/</loc>
-     <lastmod>2017-12-30</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>/consumer-complaint-database/</loc>
-     <lastmod>2017-12-30</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    
-
-    
-        
-    <url>
      <loc>/whats-new/</loc>
      <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
@@ -137,6 +121,22 @@
      <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
+    
+
+    
+        
+    <url>
+     <loc>/ask-cfpb/</loc>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/consumer-complaint-database/</loc>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
 </urlset>
