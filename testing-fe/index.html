@@ -37,7 +37,10 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
       <script src="../js/respond.min.js"></script>
-    <![endif]--> 
+    <![endif]-->
+    <script src="../scripts/scripts/linenumber.js"></script>
+    <script src="../scripts/scripts/prettify/lang-css.js"></script>
+    <script src="../scripts/scripts/prettify/prettify.js"></script> 
 </head>
 
 <body>
@@ -75,6 +78,23 @@
                             
                             <a href="../usage/" class="">Usage</a>
 
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>APIs</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../consumer-complaint-database/" class="">Consumer complaint database</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../ask-cfpb/" class="">Ask cfpb</a>
+                                </li>
+                                
+                            </ul>
                             
                         </li>
                         
@@ -125,7 +145,15 @@
                                 </li>
                                 
                                 <li>
+                                    <a href="../testing-be/" class="">Testing</a>
+                                </li>
+                                
+                                <li>
                                     <a href="../translation/" class="">Translation</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../caching/" class="">Caching</a>
                                 </li>
                                 
                             </ul>
@@ -142,21 +170,10 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="../notes-on-atomic-design/" class="">Notes on adapting atomic design</a>
-                                </li>
-                                
-                                <li>
-                                    <a href="../notes-on-frameworks/" class="">Notes on frameworks</a>
+                                    <a href="./" class="sidebar-nav-active">Testing</a>
                                 </li>
                                 
                             </ul>
-                            
-                        </li>
-                        
-                        <li>
-                            
-                            <a href="./" class="sidebar-nav-active">Testing</a>
-
                             
                         </li>
                         
@@ -274,51 +291,22 @@ Scenario: User logs in
    </tbody>
 </table></p>
 <h2 id="sauce-connect-send-tests-to-the-cloud">Sauce Connect - send tests to the cloud</h2>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>The instruction for automatically
-running Sauce Connect from gulp are not working.
-See <a href="https://github.com/cfpb/cfgov-refresh/issues/2324">https://github.com/cfpb/cfgov-refresh/issues/2324</a></p>
-</div>
 <p>Sauce Labs can be used to run tests remotely in the cloud.</p>
 <ol>
 <li>
 <p>Log into <a href="http://saucelabs.com/account"><a href="http://saucelabs.com/account">http://saucelabs.com/account</a></a>.</p>
 </li>
 <li>
-<p><a href="https://wiki.saucelabs.com/display/DOCS/Basic+Sauce+Connect+Proxy+Setup#BasicSauceConnectProxySetup-SettingUpSauceConnect">Download Sauce Connect</a></p>
-</li>
-<li>
-<p>Open a new Terminal window or tab and navigate to the downloaded SauceConnect folder.
-    If you place the folder in your Application's folder this might look like:</p>
-<pre class="highlight"><code class="linenums">cd /Users/&lt;YOUR MAC OSX USERNAME&gt;/Applications/SauceConnect</code></pre>
-
-</li>
-<li>
-<p>Copy step 3 from the the SauceLabs
-   <a href="https://wiki.saucelabs.com/display/DOCS/Basic+Sauce+Connect+Proxy+Setup#BasicSauceConnectProxySetup-SettingUpSauceConnect">Basic Setup instructions</a>
-   and run that in your Terminal window.
-   Once you see <code>Sauce Connect is up</code> in the Terminal,
-   that means the tunnel has successfully been established</p>
-<blockquote>
-<p>The Terminal command should already have your Sauce username and access key filled in.
-  If it doesn't, make sure you're logged in.</p>
-</blockquote>
-</li>
-<li>
 <p>Update and uncomment the <code>SAUCE_USERNAME</code>, <code>SAUCE_ACCESS_KEY</code>,
    and <code>SAUCE_SELENIUM_URL</code> values in your <code>.env</code> file.
-   The access key can be found in lower-left on the Sauce Labs
-   <a href="https://saucelabs.com/account/profile">account profile page</a>.</p>
+   The access key can be found on the Sauce Labs
+   <a href="https://saucelabs.com/beta/user-settings">user settings page</a>.</p>
 </li>
 <li>
-<p>Reload the settings with <code>cd .. &amp;&amp; cd cfgov-refresh</code>. Type <code>y</code> if prompted.</p>
+<p>Reload the settings with <code>source .env</code>.</p>
 </li>
 <li>
-<p>Run the tests with <code>gulp test:acceptance</code>.</p>
-<p>!!! Note:
-    If you want to temporarily disable testing on Sauce Labs,
-    run the command as: <code>gulp test:acceptance --sauce=false</code>.</p>
+<p>Run the tests with <code>gulp test:acceptance --sauce</code>.</p>
 </li>
 <li>
 <p>Monitor progress of the tests
@@ -328,8 +316,7 @@ See <a href="https://github.com/cfpb/cfgov-refresh/issues/2324">https://github.c
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you get the error <code>Error: ENOTFOUND getaddrinfo ENOTFOUND</code>
-while running a test, it likely means that Sauce Connect is not running.
-See step 4 above.</p>
+while running a test, it likely means that Sauce Connect is not running.</p>
 </div>
 <h2 id="manual-test-configuration">Manual test configuration</h2>
 <p>A number of command-line arguments can be set to test particular configurations:</p>
@@ -337,7 +324,7 @@ See step 4 above.</p>
 <li><code>--suite</code>: Choose a particular suite or suites to run.
    For example, <code>gulp test:acceptance --suite=content</code> or <code>gulp test:acceptance --suite=content,functional</code>.</li>
 <li><code>--specs</code>: Choose a particular spec or specs to run.
-   For example, <code>gulp test:acceptance --specs=contact-us.js</code>, <code>gulp test:acceptance --specs=contact-us.js,about-us.js</code>, or <code>gulp test:acceptance --specs=foo*.js</code>. If <code>--suite</code> is specified, this argument will be ignored. If neither <code>--suite</code> nor <code>--specs</code> are specified, all specs will be run.</li>
+   For example, <code>gulp test:acceptance --specs=header.feature</code>, <code>gulp test:acceptance --specs=header.feature,pagination.feature</code>, or <code>gulp test:acceptance --specs=filterable*.feature</code>. If <code>--suite</code> is specified, this argument will be ignored. If neither <code>--suite</code> nor <code>--specs</code> are specified, all specs will be run.</li>
 <li><code>--windowSize</code>: Set the window size in pixels in <code>w,h</code> format.
    For example, <code>gulp test:acceptance --windowSize=900,400</code>.</li>
 <li><code>--browserName</code>: Set the browser to run.
@@ -361,23 +348,22 @@ See step 4 above.</p>
 </ul>
 <h1 id="performance-testing">Performance testing</h1>
 <p>To audit if the site complies with performance best practices and guidelines,
-run <code>gulp test:perf</code>.</p>
+run <code>gulp audit:perf</code>.</p>
 <p>The audit will run against
 <a href="https://github.com/addyosmani/psi">Google's PageSpeed Insights</a>.</p>
-<h1 id="django-and-python-unit-tests">Django and Python unit tests</h1>
-<p>To run the the full suite of Python 2.7 unit tests using Tox, cd to the project
-root, make sure the <code>TOXENV</code> variable is set in your <code>.env</code> file and then run</p>
-<pre class="highlight"><code class="linenums">tox</code></pre>
-
-<p>If you haven't changed any installed packages and you don't need to test all migrations, you can run a much faster Python code test using:
-<pre class="highlight"><code class="linenums">tox -e fast</code></pre></p>
-<p>To see Python code coverage information, run
-<pre class="highlight"><code class="linenums">./show_coverage.sh</code></pre></p>
+<h1 id="unit-testing">Unit testing</h1>
+<h2 id="javascript-unit-tests">JavaScript unit tests</h2>
+<p>JavaScript module unit tests are run with <code>gulp test:unit</code>.</p>
+<p>If you want to run individual spec files, pass in the <code>--specs</code> command-line
+argument with the path to the spec,
+such as <code>gulp test:unit --specs=modules/Tree-spec.js</code>.
+Globs can be used to run a group of unit tests in the same directory,
+such as <code>gulp test:unit --specs=modules/transition/*.js</code>.</p>
 <h1 id="accessibility-testing">Accessibility Testing</h1>
 <p>Run the acceptance tests with an <code>--a11y</code> flag (i.e. <code>gulp test:acceptance --a11y</code>)
 to check every webpage for WCAG and Section 508 compliancy using Protractor's
 <a href="https://github.com/angular/protractor-accessibility-plugin">accessibility plugin</a>.</p>
-<p>If you'd like to audit a specific page, use <code>gulp test:a11y</code>:</p>
+<p>If you'd like to audit a specific page, use <code>gulp audit:a11y</code>:</p>
 <ol>
 <li>Enable the environment variable <code>ACHECKER_ID</code> in your <code>.env</code> file.
      Get a free <a href="http://achecker.ca/register.php">AChecker API ID</a> for the value.</li>

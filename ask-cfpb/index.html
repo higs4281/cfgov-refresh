@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <title>Ask cfpb - cfgov-refresh</title>
+    
+    
+
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    
+
+    <style type="text/css">
+        
+        .sidebar-nav a:hover,
+        .sidebar-nav a:focus,
+        .sidebar-nav a:active,
+        .sidebar-nav a.sidebar-nav-active {
+            border-left-color: #2CB34A;
+        }
+        header {
+            border-bottom-color: #2CB34A;
+        }
+        
+        
+
+        
+    </style>
+
+
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="../js/respond.min.js"></script>
+    <![endif]-->
+    <script src="../scripts/scripts/linenumber.js"></script>
+    <script src="../scripts/scripts/prettify/lang-css.js"></script>
+    <script src="../scripts/scripts/prettify/prettify.js"></script> 
+</head>
+
+<body>
+
+    <div class="container">
+        <header role="banner">
+            <div class="wrap">
+                
+                <img class="logo" src="https://cfpb.github.io/img/logo_210.png" alt="Consumer Financial Protection Bureau">
+                
+                <h1 class="site-title"><a class="title-link" href="../">cfgov-refresh</a></h1>
+            </div>
+        </header>
+
+        <div class="wrap content">
+            <aside>
+                <nav class="sidebar-nav" role="navigation">
+                    <ul>
+                        
+                        <li>
+                            
+                            <a href=".." class="">Introduction</a>
+
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <a href="../installation/" class="">Installation</a>
+
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <a href="../usage/" class="">Usage</a>
+
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>APIs</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../consumer-complaint-database/" class="">Consumer complaint database</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="./" class="sidebar-nav-active">Ask cfpb</a>
+                                </li>
+                                
+                            </ul>
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>Building and Deploying for cf.gov</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../whats-new/" class="">What's new</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../new-projects/" class="">New projects</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../branching-merging/" class="">Branching and merging</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../release-cadence/" class="">Release cadence</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../deployment/" class="">Deployment</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../feature-flags/" class="">Feature flags</a>
+                                </li>
+                                
+                            </ul>
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>Back-end guidelines</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../wagtail-migrations/" class="">Wagtail and Django migrations</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../django-to-wagtail/" class="">Wagtail Pages vs Django views</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../testing-be/" class="">Testing</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../translation/" class="">Translation</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../caching/" class="">Caching</a>
+                                </li>
+                                
+                            </ul>
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>Front-end guidelines</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../atomic-structure/" class="">Atomic structure and design</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../testing-fe/" class="">Testing</a>
+                                </li>
+                                
+                            </ul>
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <a href="../development-tips/" class="">Development tips</a>
+
+                            
+                        </li>
+                        
+                    </ul>
+                </nav>
+            </aside>
+
+            <section id="main" class="main-content" role="main">
+                <h1 id="ask-cfpb">Ask CFPB</h1>
+<h3 id="a-resource-for-questions-about-financial-products">A resource for questions about financial products</h3>
+<p>We have a database of clear, impartial answers to hundreds of financial questions. You can use the API to search and retrieve answers.
+- Many answers are available in Spanish. Topics covered include:
+- Auto loans
+- Bank accounts and services
+- Credit cards
+- Credit reports and scores
+- Debt collection
+- Families and money
+- Money transfers
+- Mortgages
+- Payday loans
+- Prepaid cards
+- Student loans</p>
+<h2 id="usage">Usage</h2>
+<p>The API is a read-only resource driven by search, and it delivers data as json. You can search for questions and answers by terms and receive a list of question/answer pairs and their URL at the CFPB.</p>
+<p>Requests follow this URL pattern:</p>
+<ul>
+<li><a href="https://www.consumerfinance.gov/ask-cfpb/search/json/?q=[SEARCH">https://www.consumerfinance.gov/ask-cfpb/search/json/?q=[SEARCH</a> TERMS]</li>
+</ul>
+<p>You'll get back a json response that includes a list of results. The payload for the search term "tuition" would look like this, but with more result entries:</p>
+<pre class="highlight"><code class="language-json linenums">{
+    query: &quot;tuition&quot;,
+    suggestion: null,
+    result_query: &quot;tuition&quot;,
+    results: [
+        {
+            url: &quot;http://www.consumerfinance.gov/ask-cfpb/what-is-a-tuition-payment-plan-en-563/ &quot;,
+            text: &quot;Tuition payment plans, also called tuition installment plans, are short-term (12 months or less) payment plans that split your college bills into equal monthly payments. Tuition installment plans can be an alternative to student loans if you can afford to pay tuition, just not in a lump sum at the start of the semester or quarter. These payment plans do not generally charge interest, but they may have up-front fees. What is a tuition payment plan? &quot;,
+            question: &quot;What is a tuition payment plan? &quot;
+        }
+    ]
+</code></pre>
+
+<h4 id="notes">Notes</h4>
+<ul>
+<li>The API is a public resource and does not require authentication, but heavy or abusive usage could result in the imposition of restrictions on its use.</li>
+</ul>
+            </section>
+        </div>
+
+        <footer role="contentinfo">
+            <div class="wrap">
+                This project is maintained by <a href="https://cfpb.github.io">The Consumer Financial Protection Bureau</a>.
+
+                <p>Hosted on <a href="http://pages.github.com/">GitHub Pages</a>.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

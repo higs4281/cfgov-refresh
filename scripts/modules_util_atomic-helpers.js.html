@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/util/atomic-helpers.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/util/atomic-helpers.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* ==========================================================================
+   Atomic Helpers.
+   Utilities for helping validate atomic design element architecture.
+   In descending order of scope, atomic components are:
+   - Page
+   - Template
+   - Organism
+   - Molecule
+   - Atom
+   ========================================================================= */
+
+'use strict';
+
+var dataHook = require( './data-hook' );
+var standardType = require( './standard-type' );
+
+/**
+ * @constant
+ * @type {string}
+ * @description
+ * Flag that gets set on an atomic component after its .init()
+ * method has been called. This is used so that an atomic
+ * component won't get initialized a second time after it
+ * has already been initialized.
+ */
+var INIT_FLAG = standardType.STATE_PREFIX + 'atomic_init';
+
+/**
+ * Check that a particular element passed into the constructor of
+ * an atomic component exists and that the correct atomic class
+ * is present on the element.
+ * @param {HTMLNode} element
+ *   The DOM element within which to search for the atomic element class.
+ * @param {string} baseClass - The CSS class name for the atomic element.
+ * @returns {HTMLNode} The DOM element for the atomic element.
+ * @throws {Error} If DOM element passed into the atomic element is not valid.
+ */
+function checkDom( element, baseClass ) {
+  _verifyElementExists( element, baseClass );
+  var dom = _verifyClassExists( element, baseClass );
+
+  return dom;
+}
+
+/**
+ * @param {HTMLNode} element
+ *   The DOM element within which to search for the atomic element class.
+ * @param {string} baseClass - The CSS class name for the atomic element.
+ * @returns {HTMLNode} The DOM element for the atomic element.
+ * @throws {Error} If DOM element passed into the atomic element is not valid.
+ */
+function _verifyElementExists( element, baseClass ) {
+  if ( !element || !element.classList ) {
+    var msg = element + ' is not valid. ' +
+              'Check that element is a DOM node with class "' +
+              baseClass + '"';
+    throw new Error( msg );
+  }
+
+  return element;
+}
+
+/**
+ * @param {HTMLNode} element
+ *   The DOM element within which to search for the atomic element class.
+ * @param {string} baseClass The CSS class name for the atomic element.
+ * @returns {HTMLNode} The DOM element for the atomic element.
+ * @throws {Error} If baseClass was not found on the element.
+ */
+function _verifyClassExists( element, baseClass ) {
+  var dom = element.classList.contains( baseClass ) ?
+            element : element.querySelector( '.' + baseClass );
+  if ( !dom ) {
+    var msg = baseClass + ' not found on or in passed DOM node.';
+    throw new Error( msg );
+  }
+
+  return dom;
+}
+
+/**
+ * Set a flag on an atomic component when it is initialized.
+ * Use the returned boolean to handle cases where an atomic component
+ * is initializing when it has already been initialized elsewhere.
+ * @param {HTMLNode} element - The DOM element for the atomic component.
+ * @param {null} destroy - Pass in true to .
+ * @returns {boolean} True if the init data-js-* hook attribute was set,
+ *   false otherwise.
+ */
+function setInitFlag( element ) {
+  if ( dataHook.contains( element, INIT_FLAG ) ) {
+    return false;
+  }
+
+  dataHook.add( element, INIT_FLAG );
+
+  return true;
+}
+
+/**
+ * Remove the initialization flag on an atomic component.
+ * This might be used if the DOM of an atomic element is cloned.
+ * @param {HTMLNode} element - The DOM element for the atomic component.
+ * @returns {boolean} True if the init data-js-* hook attribute was destroyed,
+ *   otherwise false if it didn't exist.
+ */
+function destroyInitFlag( element ) {
+  if ( !dataHook.contains( element, INIT_FLAG ) ) {
+    return false;
+  }
+
+  dataHook.remove( element, INIT_FLAG );
+
+  return true;
+}
+
+/**
+ * @param {string} selector - Selector to search for in the document.
+ * @param {Function} Constructor - A constructor function.
+ * @returns {Array} List of instances that were instantiated.
+ */
+function instantiateAll( selector, Constructor ) {
+  var all = document.querySelectorAll( selector );
+  var inst;
+  var insts = [];
+  for ( var i = 0, len = all.length; i &lt; len; i++ ) {
+    inst = new Constructor( all[i] );
+    inst.init();
+    insts.push( inst );
+  }
+  return insts;
+}
+
+// Expose public methods.
+module.exports = {
+  checkDom:        checkDom,
+  destroyInitFlag: destroyInitFlag,
+  instantiateAll:  instantiateAll,
+  setInitFlag:     setInitFlag
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AlphaTransition.html">AlphaTransition</a></li><li><a href="BaseTransition.html">BaseTransition</a></li><li><a href="BreakpointHandler.html">BreakpointHandler</a></li><li><a href="ClearableInput.html">ClearableInput</a></li><li><a href="ContentSlider.html">ContentSlider</a></li><li><a href="EventObserver.html">EventObserver</a></li><li><a href="Expandable.html">Expandable</a></li><li><a href="ExpandableGroup.html">ExpandableGroup</a></li><li><a href="ExternalSite.html">ExternalSite</a></li><li><a href="FilterableListControls.html">FilterableListControls</a></li><li><a href="FlyoutMenu.html">FlyoutMenu</a></li><li><a href="Footer.html">Footer</a></li><li><a href="GlobalBanner.html">GlobalBanner</a></li><li><a href="GlobalSearch.html">GlobalSearch</a></li><li><a href="Header.html">Header</a></li><li><a href="MegaMenu.html">MegaMenu</a></li><li><a href="MegaMenuDesktop.html">MegaMenuDesktop</a></li><li><a href="MegaMenuMobile.html">MegaMenuMobile</a></li><li><a href="MobileCarousel.html">MobileCarousel</a></li><li><a href="MoveTransition.html">MoveTransition</a></li><li><a href="Multiselect.html">Multiselect</a></li><li><a href="Notification.html">Notification</a></li><li><a href="SecondaryNavigation.html">SecondaryNavigation</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreeNode.html">TreeNode</a></li><li><a href="UStreamPlayer.html">UStreamPlayer</a></li><li><a href="VideoPlayer.html">VideoPlayer</a></li><li><a href="YoutubePlayer.html">YoutubePlayer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_attachIFrame">_attachIFrame</a></li><li><a href="global.html#_calculateCollapseDuration">_calculateCollapseDuration</a></li><li><a href="global.html#_calculateExpandDuration">_calculateExpandDuration</a></li><li><a href="global.html#_checkableInput">_checkableInput</a></li><li><a href="global.html#_clearError">_clearError</a></li><li><a href="global.html#_constrainValue">_constrainValue</a></li><li><a href="global.html#_createElement">_createElement</a></li><li><a href="global.html#_createMessage">_createMessage</a></li><li><a href="global.html#_ensureElement">_ensureElement</a></li><li><a href="global.html#_findElements">_findElements</a></li><li><a href="global.html#_getMatchesMethod">_getMatchesMethod</a></li><li><a href="global.html#_getStorageType">_getStorageType</a></li><li><a href="global.html#_getTransitionEndEvent">_getTransitionEndEvent</a></li><li><a href="global.html#_getTransitionPrefix">_getTransitionPrefix</a></li><li><a href="global.html#_inBreakpointRange">_inBreakpointRange</a></li><li><a href="global.html#_init">_init</a></li><li><a href="global.html#_initEvents">_initEvents</a></li><li><a href="global.html#_isPlainObject">_isPlainObject</a></li><li><a href="global.html#_navSecondaryToggle">_navSecondaryToggle</a></li><li><a href="global.html#_navSecondaryToggleTest">_navSecondaryToggleTest</a></li><li><a href="global.html#_onAction">_onAction</a></li><li><a href="global.html#_scrollToTop">_scrollToTop</a></li><li><a href="global.html#_sendError">_sendError</a></li><li><a href="global.html#_sendSubscriptionRequest">_sendSubscriptionRequest</a></li><li><a href="global.html#_setChildElements">_setChildElements</a></li><li><a href="global.html#_tableClicked">_tableClicked</a></li><li><a href="global.html#_toCamelCase">_toCamelCase</a></li><li><a href="global.html#_verifyClassExists">_verifyClassExists</a></li><li><a href="global.html#_verifyElementExists">_verifyElementExists</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#assign">assign</a></li><li><a href="global.html#attach">attach</a></li><li><a href="global.html#backtrack">backtrack</a></li><li><a href="global.html#BEHAVIOR_PREFIX">BEHAVIOR_PREFIX</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#bindEvent">bindEvent</a></li><li><a href="global.html#checkBehaviorDom">checkBehaviorDom</a></li><li><a href="global.html#checkbox">checkbox</a></li><li><a href="global.html#checkDom">checkDom</a></li><li><a href="global.html#closest">closest</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dataSet">dataSet</a></li><li><a href="global.html#date">date</a></li><li><a href="global.html#destroyInitFlag">destroyInitFlag</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#email">email</a></li><li><a href="global.html#empty">empty</a></li><li><a href="global.html#find">find</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getSiblings">getSiblings</a></li><li><a href="global.html#getViewportDimensions">getViewportDimensions</a></li><li><a href="global.html#handleViewportChange">handleViewportChange</a></li><li><a href="global.html#indexOfObject">indexOfObject</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#INIT_FLAG">INIT_FLAG</a></li><li><a href="global.html#instantiateAll">instantiateAll</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#isDate">isDate</a></li><li><a href="global.html#isDefined">isDefined</a></li><li><a href="global.html#isEmpty">isEmpty</a></li><li><a href="global.html#isFunction">isFunction</a></li><li><a href="global.html#isInDesktop">isInDesktop</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#isObject">isObject</a></li><li><a href="global.html#isOneExpanded">isOneExpanded</a></li><li><a href="global.html#isString">isString</a></li><li><a href="global.html#isThisExpanded">isThisExpanded</a></li><li><a href="global.html#isUndefined">isUndefined</a></li><li><a href="global.html#JS_HOOK">JS_HOOK</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#noopFunct">noopFunct</a></li><li><a href="global.html#not">not</a></li><li><a href="global.html#queryOne">queryOne</a></li><li><a href="global.html#radio">radio</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeItem">removeItem</a></li><li><a href="global.html#sendEvent">sendEvent</a></li><li><a href="global.html#sendEvents">sendEvents</a></li><li><a href="global.html#setInitFlag">setInitFlag</a></li><li><a href="global.html#setItem">setItem</a></li><li><a href="global.html#setStorage">setStorage</a></li><li><a href="global.html#STATE_PREFIX">STATE_PREFIX</a></li><li><a href="global.html#stringEscape">stringEscape</a></li><li><a href="global.html#stringMatch">stringMatch</a></li><li><a href="global.html#stringValid">stringValid</a></li><li><a href="global.html#testBreakpoint">testBreakpoint</a></li><li><a href="global.html#toggleExpandedState">toggleExpandedState</a></li><li><a href="global.html#watchWindowResize">watchWindowResize</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Wed Nov 02 2016 08:33:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

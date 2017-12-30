@@ -37,7 +37,10 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
       <script src="../js/respond.min.js"></script>
-    <![endif]--> 
+    <![endif]-->
+    <script src="../scripts/scripts/linenumber.js"></script>
+    <script src="../scripts/scripts/prettify/lang-css.js"></script>
+    <script src="../scripts/scripts/prettify/prettify.js"></script> 
 </head>
 
 <body>
@@ -75,6 +78,23 @@
                             
                             <a href="./" class="sidebar-nav-active">Usage</a>
 
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>APIs</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../consumer-complaint-database/" class="">Consumer complaint database</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../ask-cfpb/" class="">Ask cfpb</a>
+                                </li>
+                                
+                            </ul>
                             
                         </li>
                         
@@ -125,7 +145,15 @@
                                 </li>
                                 
                                 <li>
+                                    <a href="../testing-be/" class="">Testing</a>
+                                </li>
+                                
+                                <li>
                                     <a href="../translation/" class="">Translation</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../caching/" class="">Caching</a>
                                 </li>
                                 
                             </ul>
@@ -142,21 +170,10 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="../notes-on-atomic-design/" class="">Notes on adapting atomic design</a>
-                                </li>
-                                
-                                <li>
-                                    <a href="../notes-on-frameworks/" class="">Notes on frameworks</a>
+                                    <a href="../testing-fe/" class="">Testing</a>
                                 </li>
                                 
                             </ul>
-                            
-                        </li>
-                        
-                        <li>
-                            
-                            <a href="../testing/" class="">Testing</a>
-
                             
                         </li>
                         
@@ -172,7 +189,7 @@
             </aside>
 
             <section id="main" class="main-content" role="main">
-                <h2 id="usage">Usage</h2>
+                <h2 id="usage-stand-alone">Usage: Stand Alone</h2>
 <p>If not using the Vagrant box, you will generally have four tabs
 (or windows) open in your terminal, which will be used for:</p>
 <ol>
@@ -297,6 +314,107 @@ gulp test            # Run linting, unit and acceptance tests (see below).
 gulp test:unit       # Run only unit tests on source code.
 gulp test:acceptance # Run only acceptance (in-browser) tests on production code.
 gulp watch           # Watch for source code changes and auto-update a browser instance.</code></pre>
+
+<h2 id="usage-docker">Usage: Docker</h2>
+<p>Much of the guidance above for the "stand-alone" set-up still stands, and it 
+is worth reviewing in full. Here are some things that might be different:</p>
+<ul>
+<li><code>docker-compose</code> takes care of running Elasticsearch for you, and all 
+Elastisearch, MySQL, and Python output will be shown in a single Terminal 
+window or tab. (whereever you run <code>docker-compose up</code>)</li>
+<li><code>manage.py</code>commands can only be run after you've opened up a terminal in the 
+Python container, which you can do with <code>./shell.sh</code></li>
+<li>There is not <em>yet</em> a good way to use SSL/HTTPS, but that is in the works</li>
+<li>You won't ever use these scripts: <code>setup.sh</code>, <code>backend.sh</code>, <code>runserver.sh</code></li>
+</ul>
+<h3 id="how-do-i">How do I...</h3>
+<h4 id="use-docker-machine">Use Docker Machine</h4>
+<p>If you used <code>mac-virtualbox-init.sh</code> or <code>setup.sh docker</code>, then we used Docker 
+Machine to create a virtualbox VM, running the docker server. Here are some 
+useful docker machine commands:</p>
+<ul>
+<li>Start and stop the VM with  <code>docker-machine start</code> and <code>docker-machine stop</code></li>
+<li>get the current machine IP with <code>docker-machine ip</code></li>
+<li>if for some reason you want to start over, <code>docker-machine rm default</code>, and 
+  <code>source mac-virtualbox-init.sh</code></li>
+</ul>
+<p>You'll need to run this command in any new terminal window or tab:</p>
+<p><code>eval $(docker-machine env)</code></p>
+<p>It may be helpful to run <code>docker-machine env</code> by itself, so you understand 
+what's happening. Those variables are what allows docker-compose and the docker 
+command line tool, running natively on your mac, to connect to the Docker 
+server running inside virtualbox.</p>
+<p>If you use autoenv (described in the stand-alone intructions) or something 
+similar, you might consider adding <code>eval $(docker-machine env)</code> to your .env 
+file. You could also achieve the same results (and start the VM if it's not 
+running yet) with <code>source mac-virtualbox-init.sh</code></p>
+<p>Any further Docker documentation will assume you are either in a shell where 
+you have already run <code>eval $(docker-machine env)</code>, or you are in an environment 
+where that's not neccessary.</p>
+<h4 id="run-managepy-commands-like-migrate-shell-and-dbshell-and-shell-scripts-like-refresh-datash">Run manage.py commands like migrate, shell, and dbshell, and shell scripts like refresh-data.sh</h4>
+<p>run <code>./shell.sh</code> to open up a shell <em>inside</em> the Python container. From there, 
+commands like <code>cfgov/manage.py migrate</code> should run as expected.</p>
+<p>The same goes for scripts like <code>./refresh-data.sh</code> and <code>./initial-data.sh</code> -- 
+they will work as expected once you're inside the container.</p>
+<p>In addition you can run single commands by passing them as arguments to 
+<code>shell.sh</code>, for example:</p>
+<p><code>./shell.sh cfgov/manage.py migrate</code></p>
+<h4 id="use-pdb">Use PDB</h4>
+<p>Run <code>./attach.sh</code> to connect to the TTY session where <code>manage.py runserver</code> is 
+running. If the app is paused at a PDB prompt, this is where you can access it.</p>
+<h4 id="handle-updates-to-python-requirements">Handle updates to Python requirements</h4>
+<p>If Compose is running, stop it with CTRL-C. Run:</p>
+<p><code>docker-compose build python</code></p>
+<p>This will update your Python image. The next time you run <code>docker-compose up</code>, 
+the new requirements will be in place.</p>
+<h4 id="set-environment-variables">Set environment variables</h4>
+<p>Your shell environment variables (and the variables in your .env file, if you 
+are using one) are not visible to applications running in Docker. If you need 
+to set variables that will be visible to Django, and in <code>./shell.sh</code>, you'll 
+need to set them in the .python_env file, and restart the python container (it 
+might be simpler to simple stop compose with ctrl-c, and start it again with 
+<code>docker-compose up</code>)</p>
+<p>.python_env is <em>not</em> a shell script, like your .env file, ~/.bash_profile, etc.
+See the <a href="https://docs.docker.com/compose/compose-file/#env_file">Docker Compose docs</a></p>
+<h4 id="get-familiar-with-docker-compose-and-our-configuration">Get familiar with Docker Compose, and our configuration</h4>
+<p>docker-compose.yml contains a sort of "recipe" for running the site. Each entry 
+in the Compose file describes a component of our application stack (MySQL, 
+Elasticsearch, and Python), and either points to a public image on Dockerhub, 
+or to a Dockerfile in cfgov-refresh. You can learn a lot more about Compose 
+files in <a href="https://docs.docker.com/compose/compose-file/">the docs</a></p>
+<p>Similarly, a Dockerfile contains instructions for transforming some base image, 
+to one that suits our needs. The Dockerfile sitting in the top level of 
+cfgov-refresh is probably the most interesting. It starts with 
+<a href="https://hub.docker.com/_/centos/">the public CentOS:7 image</a>, and installs 
+everything else neccessary to run our Python dependencies and the Django app 
+itself.  This file will only be executed:</p>
+<ul>
+<li>the first time you run <code>docker-compose up</code> (or the first time after you 
+re-create the Docker Machine VM)</li>
+<li>any time you run <code>docker-compose build</code></li>
+</ul>
+<p>That's why you need to run <code>docker-compose build</code> after any changes to 
+/requirements/</p>
+<p>There are other compose subcommands you might be interested in. Consider 
+<a href="https://docs.docker.com/compose/reference/overview/">learning about</a> 
+<code>build</code>, <code>restarts</code>, <code>logs</code>, <code>ps</code>, <code>top</code>, and the <code>-d</code> option for <code>up</code>.</p>
+<h4 id="develop-satellite-apps">Develop satellite apps</h4>
+<p>Check out any apps you are developing into the develop-apps directory. These 
+will automatically be added to the 
+<a href="https://docs.python.org/2/using/cmdline.html#envvar-PYTHONPATH">PYTHONPATH</a>, 
+and apps contained within will be importable from Python running in the 
+container.</p>
+<p>For example, if your app is called 'foobar', in a repo called foobar-project, 
+you could clone foobar-project in to develop apps:</p>
+<p><code>git clone https://github.com/myorg/foobar-project</code></p>
+<p>... which will create a directory at develop-apps/foobar-project. Assuming 
+'foobar' is at the top-level of 'foobar-project', you should be able to 
+import it from your python code:</p>
+<pre class="highlight"><code class="language-python linenums">import foobar</code></pre>
+
+<h4 id="runserver-has-crashed-how-do-i-start-it-again">runserver has crashed! How do I start it again</h4>
+<p>In a seperate terminal window or tab, <code>docker-compose up python</code> should restart 
+it. </p>
             </section>
         </div>
 

@@ -37,7 +37,10 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
       <script src="../js/respond.min.js"></script>
-    <![endif]--> 
+    <![endif]-->
+    <script src="../scripts/scripts/linenumber.js"></script>
+    <script src="../scripts/scripts/prettify/lang-css.js"></script>
+    <script src="../scripts/scripts/prettify/prettify.js"></script> 
 </head>
 
 <body>
@@ -75,6 +78,23 @@
                             
                             <a href="../usage/" class="">Usage</a>
 
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>APIs</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../consumer-complaint-database/" class="">Consumer complaint database</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../ask-cfpb/" class="">Ask cfpb</a>
+                                </li>
+                                
+                            </ul>
                             
                         </li>
                         
@@ -125,7 +145,15 @@
                                 </li>
                                 
                                 <li>
+                                    <a href="../testing-be/" class="">Testing</a>
+                                </li>
+                                
+                                <li>
                                     <a href="../translation/" class="">Translation</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../caching/" class="">Caching</a>
                                 </li>
                                 
                             </ul>
@@ -142,21 +170,10 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="../notes-on-atomic-design/" class="">Notes on adapting atomic design</a>
-                                </li>
-                                
-                                <li>
-                                    <a href="../notes-on-frameworks/" class="">Notes on frameworks</a>
+                                    <a href="../testing-fe/" class="">Testing</a>
                                 </li>
                                 
                             </ul>
-                            
-                        </li>
-                        
-                        <li>
-                            
-                            <a href="../testing/" class="">Testing</a>
-
                             
                         </li>
                         
@@ -173,8 +190,16 @@
 
             <section id="main" class="main-content" role="main">
                 <h1 id="notes-on-atomic-design">Notes on Atomic Design</h1>
-<p>Check out <a href="http://www.ebaytechblog.com/?p=3113">Don't Build Pages, Build Modules</a>. It encompasses exactly what we are trying to achieve by building components using atomic design. It's important to note that our front-end atomic architecture is still evolving.</p>
-<p>Our components are broken down into templates, organisms, molecules, and atoms. We opted not to use the page component, although it exists in atomic design. Our components are composed of HTML, CSS, and JavaScript. If a component doesn’t have user interactions or require styling, then it won’t have an associated js and/or css file. We compose our atomic components as follows:</p>
+<p>Check out <a href="http://www.ebaytechblog.com/?p=3113">Don't Build Pages, Build Modules</a>.
+It encompasses exactly what we are trying to achieve by building components
+using atomic design.
+It's important to note that our front-end atomic architecture is still evolving.</p>
+<p>Our components are broken down into templates, organisms, molecules, and atoms.
+We opted not to use the page component, although it exists in atomic design.
+Our components are composed of HTML, CSS, and JS (JavaScript).
+If a component doesn’t have user interactions or require styling,
+then it won’t have an associated JS and/or CSS file.</p>
+<p>We compose our atomic components as follows:</p>
 <h3 id="atoms">Atoms</h3>
 <p>Prefixed with “a-” in CSS, JavaScript, and HTML files.</p>
 <h4 id="html">HTML</h4>
@@ -182,82 +207,91 @@
 
 <h4 id="css">CSS</h4>
 <pre class="highlight"><code class="language-css linenums"> .a-overlay {
-        // Only show overlay at mobile/tablet size.
-        .respond-to-max( @bp-sm-max, {
-            height: 100%;
-            width: 100%;</code></pre>
+    // Only show overlay at mobile/tablet size.
+    .respond-to-max( @bp-sm-max, {
+        height: 100%;
+        width: 100%;
+ …</code></pre>
 
 <h3 id="molecules">Molecules</h3>
 <p>Prefixed with “m-” in CSS, JavaScript, and HTML files.</p>
 <h4 id="html_1">HTML</h4>
-<pre class="highlight"><code class="language-html linenums">&lt;div class=&quot;m-notification m-notification__error m-notification__visible&quot; data-js-hook=&quot;state_atomic_init&quot;&gt;
-      &lt;span class=&quot;m-notification_icon cf-icon&quot;&gt;&lt;/span&gt;
-      &lt;div class=&quot;m-notification_content&quot; role=&quot;alert&quot;&gt;&lt;/div&gt;
- &lt;/div&gt;</code></pre>
+<pre class="highlight"><code class="language-html linenums">&lt;div class=&quot;m-notification
+            m-notification__visible
+            m-notification__error&quot;
+     data-js-hook=&quot;state_atomic_init&quot;&gt;
+    &lt;span class=&quot;m-notification_icon cf-icon&quot;&gt;&lt;/span&gt;
+    &lt;div class=&quot;m-notification_content&quot; role=&quot;alert&quot;&gt;
+        &lt;div class=&quot;h4 m-notification_message&quot;&gt;Page not found.&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
 
 <h4 id="css_1">CSS</h4>
 <pre class="highlight"><code class="language-css linenums">.m-notification {
     display: none;
     position: relative;
-    padding: @m-notification-padding__px;
-    padding-left: 40px;</code></pre>
+    padding: @notification-padding__px;
+    …</code></pre>
 
 <h4 id="javascript">JavaScript</h4>
 <pre class="highlight"><code class="language-javascript linenums">function Notification( element ) {
-   // eslint-disable-line max-statements, inline-comments, max-len
-   var BASE_CLASS = 'm-notification';
+   const BASE_CLASS = 'm-notification';
 
    // Constants for the state of this Notification.
-   var SUCCESS = 'success';
-   var WARNING = 'warning';
-   var ERROR = 'error';
+   const SUCCESS = 'success';
+   const WARNING = 'warning';
+   const ERROR = 'error';
+
    // Constants for the Notification modifiers.
-   var MODIFIER_VISIBLE = BASE_CLASS + '__visible';
-   var _dom = atomicHelpers.checkDom( element, BASE_CLASS );
-   var _contentDom = _dom.querySelector( '.' + BASE_CLASS + '_content' );</code></pre>
+   const MODIFIER_VISIBLE = BASE_CLASS + '__visible';
+   const _dom = atomicHelpers.checkDom( element, BASE_CLASS );
+   const _contentDom = _dom.querySelector( '.' + BASE_CLASS + '_content' );
+   …</code></pre>
 
 <p>The notification molecule can be instantiated with the following code:</p>
-<pre class="highlight"><code class="language-javascript linenums">_notification = new Notification( _dom );
-_notification.init();</code></pre>
+<pre class="highlight"><code class="language-javascript linenums">const notification = new Notification( _dom );
+notification.init();</code></pre>
 
 <h3 id="organisms">Organisms</h3>
 <p>Prefixed with “o-” in CSS, JavaScript, and HTML.</p>
 <h4 id="html_2">HTML</h4>
-<pre class="highlight"><code class="language-html linenums">&lt;div data-qa-hook=&quot;expandable&quot; class=&quot;o-expandable
-                                      o-expandable__borders
-                                      o-expandable__midtone
-                                      o-expandable__expanded&quot;
-                               data-js-hook=&quot;state_atomic_init&quot;&gt;
+<pre class="highlight"><code class="language-html linenums">&lt;div class=&quot;o-expandable
+            o-expandable__borders
+            o-expandable__midtone
+            o-expandable__expanded&quot;
+     data-js-hook=&quot;state_atomic_init&quot;&gt;
     &lt;button class=&quot;o-expandable_target&quot; aria-pressed=&quot;true&quot;&gt;
-        &lt;div class=&quot;o-expandable_header&quot;&gt;</code></pre>
+        &lt;div class=&quot;o-expandable_header&quot;&gt;
+        …</code></pre>
 
 <p>JavaScript:</p>
 <pre class="highlight"><code class="language-javascript linenums"> function Expandable( element ) {
-  var BASE_CLASS = 'o-expandable';
+  const BASE_CLASS = 'o-expandable';
 
   // Bitwise flags for the state of this Expandable.
-  var COLLAPSED = 0;
-  var COLLAPSING = 1;
-  var EXPANDING = 2;
-  var EXPANDED = 3;
+  const COLLAPSED = 0;
+  const COLLAPSING = 1;
+  const EXPANDING = 2;
+  const EXPANDED = 3;
 
   // The Expandable element will directly be the Expandable
   // when used in an ExpandableGroup, otherwise it can be the parent container.
-  var _dom = atomicHelpers.checkDom( element, BASE_CLASS );
-  var _target = _dom.querySelector( '.' + BASE_CLASS + '_target' );
-  var _content = _dom.querySelector( '.' + BASE_CLASS + '_content' );</code></pre>
+  const _dom = atomicHelpers.checkDom( element, BASE_CLASS );
+  const _target = _dom.querySelector( '.' + BASE_CLASS + '_target' );
+  const _content = _dom.querySelector( '.' + BASE_CLASS + '_content' );
+  …</code></pre>
 
 <p>The Expandable organism can be instantiated with the following code:</p>
-<pre class="highlight"><code class="language-javascript linenums">_expandable = new Expandable( _dom.querySelector( '.o-expandable' ) );
-_expandable.init( _expandable.EXPANDED );</code></pre>
+<pre class="highlight"><code class="language-javascript linenums">const expandable = new Expandable( _dom.querySelector( '.o-expandable' ) );
+expandable.init( _expandable.EXPANDED );</code></pre>
 
 <p>or</p>
-<pre class="highlight"><code class="language-javascript linenums">var atomicHelpers = require( '../../modules/util/atomic-helpers' );
-var Expandable = require( '../../organisms/Expandable' );
+<pre class="highlight"><code class="language-javascript linenums">const atomicHelpers = require( '../../modules/util/atomic-helpers' );
+const Expandable = require( '../../organisms/Expandable' );
 atomicHelpers.instantiateAll( '.o-expandable', Expandable );</code></pre>
 
 <h3 id="templates">Templates</h3>
-<p>Prefixed with “t-” in CSS, JavaScript, and HTML.</p>
+<p>Prefixed with “t-” in CSS, JavaScript, and HTML. <a href="https://github.com/cfpb/cfgov-refresh/tree/master/cfgov/jinja2/v1">View all available templates</a> that can be extended or reused to create pages.</p>
 <h4 id="css_2">CSS</h4>
 <pre class="highlight"><code class="language-css linenums">.t-careers {
     &amp;_social .m-social-media {
@@ -265,9 +299,9 @@ atomicHelpers.instantiateAll( '.o-expandable', Expandable );</code></pre>
     }
     …</code></pre>
 
-<h3 id="folder-structure">Folder Structure</h3>
-<p>Atomic code is currently separated and named based on asset type. This is a mistake in my view, as I believe we should begin migrating to a modular folder structure based on the component.</p>
-<h4 id="current-structure">Current Structure</h4>
+<h3 id="folder-structure">Folder structure</h3>
+<p>Our atomic components are separated and named based on asset type. HTML, CSS, and JavaScript for each component are in separate directories.</p>
+<h4 id="current-structure">Current structure</h4>
 <h4 id="html_3">HTML</h4>
 <pre class="highlight"><code class="linenums">cfgov-refresh/cfgov/jinja2/v1/_includes/atoms/
 cfgov-refresh/cfgov/jinja2/v1/_includes/molecules/
@@ -288,17 +322,8 @@ cfgov-refresh/cfgov/unprocessed/js/organisms/</code></pre>
 cfgov-refresh/test/unit_tests/molecules/
 cfgov-refresh/test/unit_tests/organisms/</code></pre>
 
-<h4 id="proposed-folder-structure">Proposed Folder Structure</h4>
-<pre class="highlight"><code class="linenums">cfgov-refresh/cfgov/front-end/molecules/Expandable
-
-Expandable.html
-Expandable.css
-Expandable.js
-Expandable-unit-test.js
-README.MD</code></pre>
-
-<h3 id="javascript-architecture">JavaScript Architecture</h3>
-<p>There was considerable discussion on how we should create JS components. The components aren't constructed to be used on SPAs (Single Page Applications). They are built to be rendered on the sever and then enhanced via JavaScript on the client. The basic interface for the components is as follows:</p>
+<h3 id="javascript-architecture">JavaScript architecture</h3>
+<p>JavaScript components are built to be rendered on the server and then enhanced via JavaScript on the client. The basic interface for the components is as follows:</p>
 <pre class="highlight"><code class="language-javascript linenums">function AtomicComponent( domElement ) {
     // Ensure the passed in Element is in the DOM.
     // Query and store references to sub-elements.
@@ -313,33 +338,34 @@ README.MD</code></pre>
     this.destroy = function destroy(){}
 }</code></pre>
 
-<p>We aren't testing for interface adherence but we probably should. We generally favor composition over inheritance. You can get more information by reading the following:</p>
+<p>We generally favor composition over inheritance.
+You can get more information by reading the following:</p>
 <h4 id="articles">Articles</h4>
 <p><a href="https://medium.com/javascript-scene/a-simple-challenge-to-classical-inheritance-fans-e78c2cf5eead#.mtrvhcjiw">A Simple Challenge to Classical Inheritance Fans</a>
 <a href="https://www.youtube.com/watch?v=wfMtDGfHWpA">Composition over Inheritance (Youtube)</a></p>
-<h4 id="code-and-related-prs">Code and Related PRs</h4>
-<p><a href="https://github.com/cfpb/cfgov-refresh/pull/916">View Unit Test</a>
-<a href="http://jsfiddle.net/0j9u66h0/9/">Expandable example 1</a>
-<a href="https://jsfiddle.net/cpsyLy3L/2/">Expandable example 2</a></p>
-<h2 id="component-build-pipeline">Component Build Pipeline</h2>
+<h2 id="component-build-pipeline">Component build pipeline</h2>
 <h4 id="gulp">Gulp</h4>
-<p>Gulp is used as a task automation tool. A specific breakdown of each task is contained <a href="https://github.com/cfpb/cfgov-refresh#available-gulp-tasks">here</a>.</p>
+<p>Gulp is used as a task automation tool. Tasks include compiling CSS, creating a standard webpack workflow for bundling scripts, minifying code, linting, image optimizing, running unit tests, and <a href="https://github.com/cfpb/cfgov-refresh/tree/master/gulp">more</a>.</p>
 <h4 id="webpack">Webpack</h4>
-<p>Wepback is used as a module bundler although it's capable of more. We create page, global, and atomic specific bundles. The configuration for the bundles is contained in webpack-config.js. An explanation for the usage of each bundle is contained in scripts.js.</p>
+<p>Wepback is used as a module bundler although it's capable of more.
+We create page, global, and atomic specific bundles.
+The configuration for the bundles is contained in config/webpack-config.js.
+An explanation for the usage of each bundle is contained in scripts.js.</p>
 <h4 id="routes">Routes</h4>
-<p>Routes are used to serve JavaScript bundles to the browser based on the requested URL or Wagtail page Media property. The happens via code contained in base.html.</p>
-<h4 id="basehtml">Base.html</h4>
-<p>This file serves as the base document for serving up assets and content. It's currently very complicated, obtrusive, and needs to be refactored.</p>
-<h4 id="wagtail-page-media-property">Wagtail Page Media Property</h4>
-<p>Each Atomic component has a media property which list the JavaScript files that should be rendered via base.html. When a page is requested via the browser, code contained in base.html will loop all Atomic components for the requested page and render the appropriate Atomic JavaScript bundles.</p>
-<h4 id="questions-and-concerns">Questions and Concerns</h4>
-<ul>
-<li>How do we support Single Page Applications and be functional when JavaScript is disabled?</li>
-<li>How do we ensure creation of performant atomic components?</li>
-<li>Is the codebase lacking uniformity?</li>
-<li>CSS bloat when multiple components are on the same page but from different Django apps.</li>
-<li>Ensuring simplicity over complexity.</li>
-</ul>
+<p>Routes are used to serve JavaScript bundles to the browser based
+on the requested URL or Wagtail page Media property.
+This happens via code contained in <a href="https://github.com/cfpb/cfgov-refresh/blob/master/cfgov/jinja2/v1/_layouts/base.html#L236-L285">base.html</a>. This file serves as the base HTML template for serving up assets and content. <a href="https://github.com/cfpb/cfgov-refresh/blob/master/cfgov/jinja2/v1/_layouts/base.html">View base.html on Github</a>.</p>
+<h4 id="wagtail-page-media-property">Wagtail page media property</h4>
+<p>Each atomic component has a media property that list the JavaScript files
+that should be rendered via base.html.
+When a page is requested via the browser, code contained in base.html will
+loop all atomic components for the requested page and render
+the appropriate atomic JavaScript bundles.</p>
+<p>Here is an example of the media property on a component from the <a href="https://github.com/cfpb/cfgov-refresh/blob/master/cfgov/v1/atomic_elements/organisms.py#L223-L224">Email signup organism</a>:</p>
+<pre class="highlight"><code class="linenums">class Media:
+    js = ['email-signup.js']</code></pre>
+
+<p>This will load the <code>email-signup.js</code> script on any page that includes the Email Signup organism in its template.</p>
             </section>
         </div>
 

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/ContentSlider.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/ContentSlider.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var $ = require( 'jquery' );
+require( 'slick' );
+
+var EventObserver = require( '../modules/util/EventObserver' );
+var fnBind = require( '../modules/util/fn-bind' ).fnBind;
+
+/**
+ * ContentSlider
+ * @class
+ *
+ * @classdesc Slides content in and out of a container div.
+ *
+ * When an element inside container with class `content-show`
+ * is clicked, the element matching its `data-content` value
+ * will be cloned, inserted in a slide, and rotated into view in the
+ * container, whose height will be recalculated to match new contents.
+ * When elements with class `content-hide` are clicked,
+ * the slide containing the element will be rotated out of view
+ * and then removed from the DOM.
+ *
+ * @param {string} elem - Container element.
+ * @returns {ContentSlider} An instance.
+ */
+function ContentSlider( elem ) {
+
+  // Constants.
+  /**
+   * @constant
+   * @type {number}
+   * @description
+   *  Carousel transition speed in milliseconds.
+   */
+  var SPEED = 300;
+
+  var _$container = $( elem );
+
+  var _slideCount = 0;
+  var _slickObj;
+
+  /**
+   * @param {number} numSlides - Number of permanent slides in the container.
+   * @returns {ContentSlider} An instance.
+   */
+  function init( numSlides ) {
+    _slideCount = numSlides;
+
+    // Initialize slick carousel.
+    var slickOpts = {
+      dots:           false,
+      infinite:       false,
+      swipe:          false,
+      speed:          SPEED,
+      adaptiveHeight: true,
+      arrows:         false
+    };
+
+    _$container.on( 'afterChange', fnBind( _afterChangeHandler, this ) );
+    _$container.on( 'beforeChange', _beforeChangeHandler );
+    _$container.on( 'init', fnBind( _initHandler, this ) );
+    _$container.slick( slickOpts );
+
+    return this;
+  }
+
+  /**
+   * @param {Object} event - Slick event.
+   * @param {Object} slider - Reference to the slick slider instance.
+   */
+  function _initHandler( event, slider ) {
+    _slickObj = slider;
+    _$container.height( $( _slickObj.$slides[0] ).height() );
+
+    // Set up events.
+    _$container.on(
+      'click.slider',
+      '.content-show',
+      $.proxy( _slideInContent, this )
+    );
+    _$container.on(
+      'click.slider',
+      '.content-hide',
+      $.proxy( _slideOutContent, this )
+    );
+
+    // Overwrite the default method to set height
+    // There are performance implications of doing so
+    // as noted here https://github.com/kenwheeler/slick/issues/83.
+    // ( Although wildly exaggerated. )
+    _slickObj.setHeight = function setHeight() {
+      this.$list.css( 'height', 'auto' );
+    };
+  }
+
+  /**
+   * @param {Object} event - Slick event.
+   * @param {Object} slider - Reference to the slick slider instance.
+   * @param {number} currInd - Current slide number.
+   * @param {number} targetInd - Slide number to switch to.
+   */
+  function _afterChangeHandler( event, slider, currInd, targetInd ) {
+    // Init the Expandable after the nodes have been cloned.
+    this.dispatchEvent( 'afterChange', {
+      target: this, currInd: currInd, targetInd: targetInd
+    } );
+  }
+
+  /**
+   * @param {Object} event - Slick event.
+   * @param {Object} slider - Reference to the slick slider instance.
+   * @param {number} currInd - Current slide number.
+   * @param {number} targetInd - Slide number to switch to.
+   */
+  function _beforeChangeHandler( event, slider, currInd, targetInd ) {
+    // When slide is changed,
+    // animate height of container to accommodate new slide's height.
+    var slide = slider.$slides[targetInd];
+    slider.$slider.animate(
+      { height: $( slide ).height() + 'px' }, SPEED
+    );
+  }
+
+  /**
+   * @param {Object} event - click.slider event.
+   */
+  function _slideInContent( event ) {
+    event.preventDefault();
+    var $div = $( '&lt;div>' );
+    var $node = $( $( event.currentTarget ).data( 'content' ) );
+    if ( $node.length ) {
+      // TODO: Move content instead of cloning; use ids instead of classes.
+      $node.first().clone().show().appendTo( $div );
+      _$container.slick( 'slickAdd', $div );
+      _$container.slick( 'slickNext' );
+    }
+  }
+
+  /**
+   * @param {Object} event - click.slider event.
+   */
+  function _slideOutContent( event ) {
+    event.preventDefault();
+    _$container.slick( 'slickPrev' );
+
+    // Once slide has been animated out of view, remove it from DOM.
+    setTimeout( function() {
+      _$container.slick( 'slickRemove', _slickObj.$slides.length - 1 );
+    }, SPEED );
+  }
+
+  /**
+   * @returns {ContentSlider} An instance.
+   */
+  function destroy() {
+
+    // Remove all but permanent slides.
+    while ( _slickObj.$slides.length > _slideCount ) {
+      _$container.slick( 'slickRemove', _slickObj.$slides.length - 1 );
+    }
+
+    // Remove listeners on container.
+    _$container.off( 'click.slider' );
+    _$container.slick( 'unslick' );
+
+    return this;
+  }
+
+  /**
+   * Sets container to height: auto.
+   * @returns {ContentSlider} An instance.
+   */
+  function setHeightToAuto() {
+    _$container.height( 'auto' );
+
+    return this;
+  }
+
+  // Export public methods.
+  var eventObserver = new EventObserver();
+  this.addEventListener = eventObserver.addEventListener;
+  this.removeEventListener = eventObserver.removeEventListener;
+  this.dispatchEvent = eventObserver.dispatchEvent;
+
+  this.init = init;
+  this.destroy = destroy;
+  this.setHeightToAuto = setHeightToAuto;
+
+  return this;
+}
+
+module.exports = ContentSlider;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AlphaTransition.html">AlphaTransition</a></li><li><a href="BaseTransition.html">BaseTransition</a></li><li><a href="BreakpointHandler.html">BreakpointHandler</a></li><li><a href="ClearableInput.html">ClearableInput</a></li><li><a href="ContentSlider.html">ContentSlider</a></li><li><a href="EventObserver.html">EventObserver</a></li><li><a href="Expandable.html">Expandable</a></li><li><a href="ExpandableGroup.html">ExpandableGroup</a></li><li><a href="ExternalSite.html">ExternalSite</a></li><li><a href="FilterableListControls.html">FilterableListControls</a></li><li><a href="FlyoutMenu.html">FlyoutMenu</a></li><li><a href="Footer.html">Footer</a></li><li><a href="GlobalBanner.html">GlobalBanner</a></li><li><a href="GlobalSearch.html">GlobalSearch</a></li><li><a href="Header.html">Header</a></li><li><a href="MegaMenu.html">MegaMenu</a></li><li><a href="MegaMenuDesktop.html">MegaMenuDesktop</a></li><li><a href="MegaMenuMobile.html">MegaMenuMobile</a></li><li><a href="MobileCarousel.html">MobileCarousel</a></li><li><a href="MoveTransition.html">MoveTransition</a></li><li><a href="Multiselect.html">Multiselect</a></li><li><a href="Notification.html">Notification</a></li><li><a href="SecondaryNavigation.html">SecondaryNavigation</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreeNode.html">TreeNode</a></li><li><a href="UStreamPlayer.html">UStreamPlayer</a></li><li><a href="VideoPlayer.html">VideoPlayer</a></li><li><a href="YoutubePlayer.html">YoutubePlayer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_attachIFrame">_attachIFrame</a></li><li><a href="global.html#_calculateCollapseDuration">_calculateCollapseDuration</a></li><li><a href="global.html#_calculateExpandDuration">_calculateExpandDuration</a></li><li><a href="global.html#_checkableInput">_checkableInput</a></li><li><a href="global.html#_clearError">_clearError</a></li><li><a href="global.html#_constrainValue">_constrainValue</a></li><li><a href="global.html#_createElement">_createElement</a></li><li><a href="global.html#_createMessage">_createMessage</a></li><li><a href="global.html#_ensureElement">_ensureElement</a></li><li><a href="global.html#_findElements">_findElements</a></li><li><a href="global.html#_getMatchesMethod">_getMatchesMethod</a></li><li><a href="global.html#_getStorageType">_getStorageType</a></li><li><a href="global.html#_getTransitionEndEvent">_getTransitionEndEvent</a></li><li><a href="global.html#_getTransitionPrefix">_getTransitionPrefix</a></li><li><a href="global.html#_inBreakpointRange">_inBreakpointRange</a></li><li><a href="global.html#_init">_init</a></li><li><a href="global.html#_initEvents">_initEvents</a></li><li><a href="global.html#_isPlainObject">_isPlainObject</a></li><li><a href="global.html#_navSecondaryToggle">_navSecondaryToggle</a></li><li><a href="global.html#_navSecondaryToggleTest">_navSecondaryToggleTest</a></li><li><a href="global.html#_onAction">_onAction</a></li><li><a href="global.html#_scrollToTop">_scrollToTop</a></li><li><a href="global.html#_sendError">_sendError</a></li><li><a href="global.html#_sendSubscriptionRequest">_sendSubscriptionRequest</a></li><li><a href="global.html#_setChildElements">_setChildElements</a></li><li><a href="global.html#_tableClicked">_tableClicked</a></li><li><a href="global.html#_toCamelCase">_toCamelCase</a></li><li><a href="global.html#_verifyClassExists">_verifyClassExists</a></li><li><a href="global.html#_verifyElementExists">_verifyElementExists</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#assign">assign</a></li><li><a href="global.html#attach">attach</a></li><li><a href="global.html#backtrack">backtrack</a></li><li><a href="global.html#BEHAVIOR_PREFIX">BEHAVIOR_PREFIX</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#bindEvent">bindEvent</a></li><li><a href="global.html#checkBehaviorDom">checkBehaviorDom</a></li><li><a href="global.html#checkbox">checkbox</a></li><li><a href="global.html#checkDom">checkDom</a></li><li><a href="global.html#closest">closest</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dataSet">dataSet</a></li><li><a href="global.html#date">date</a></li><li><a href="global.html#destroyInitFlag">destroyInitFlag</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#email">email</a></li><li><a href="global.html#empty">empty</a></li><li><a href="global.html#find">find</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getSiblings">getSiblings</a></li><li><a href="global.html#getViewportDimensions">getViewportDimensions</a></li><li><a href="global.html#handleViewportChange">handleViewportChange</a></li><li><a href="global.html#indexOfObject">indexOfObject</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#INIT_FLAG">INIT_FLAG</a></li><li><a href="global.html#instantiateAll">instantiateAll</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#isDate">isDate</a></li><li><a href="global.html#isDefined">isDefined</a></li><li><a href="global.html#isEmpty">isEmpty</a></li><li><a href="global.html#isFunction">isFunction</a></li><li><a href="global.html#isInDesktop">isInDesktop</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#isObject">isObject</a></li><li><a href="global.html#isOneExpanded">isOneExpanded</a></li><li><a href="global.html#isString">isString</a></li><li><a href="global.html#isThisExpanded">isThisExpanded</a></li><li><a href="global.html#isUndefined">isUndefined</a></li><li><a href="global.html#JS_HOOK">JS_HOOK</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#noopFunct">noopFunct</a></li><li><a href="global.html#not">not</a></li><li><a href="global.html#queryOne">queryOne</a></li><li><a href="global.html#radio">radio</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeItem">removeItem</a></li><li><a href="global.html#sendEvent">sendEvent</a></li><li><a href="global.html#sendEvents">sendEvents</a></li><li><a href="global.html#setInitFlag">setInitFlag</a></li><li><a href="global.html#setItem">setItem</a></li><li><a href="global.html#setStorage">setStorage</a></li><li><a href="global.html#STATE_PREFIX">STATE_PREFIX</a></li><li><a href="global.html#stringEscape">stringEscape</a></li><li><a href="global.html#stringMatch">stringMatch</a></li><li><a href="global.html#stringValid">stringValid</a></li><li><a href="global.html#testBreakpoint">testBreakpoint</a></li><li><a href="global.html#toggleExpandedState">toggleExpandedState</a></li><li><a href="global.html#watchWindowResize">watchWindowResize</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Wed Nov 02 2016 08:33:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

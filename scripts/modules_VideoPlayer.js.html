@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/VideoPlayer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/VideoPlayer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* ==========================================================================
+    Base Video Player Class
+   ========================================================================== */
+
+'use strict';
+
+var _assign = require( './util/assign' ).assign;
+var _noopFunct = require( './util/standard-type' ).noopFunct;
+var _jsLoader = require( './util/js-loader' );
+var _dataSet = require( './util/data-set' ).dataSet;
+
+var DOM_INVALID = require( '../config/error-messages-config' ).DOM.INVALID;
+
+var CLASSES = Object.freeze( {
+  VIDEO_PLAYER_SELECTOR:     '.video-player',
+  VIDEO_PLAYING_STATE:       'video-playing',
+  IMAGE_SELECTOR:            '.video-player_image',
+  IFRAME_CLASS_NAME:         'video-player_iframe',
+  IFRAME_CONTAINER_SELECTOR: '.video-player_iframe-container',
+  PLAY_BTN_SELECTOR:         '.video-player_play-btn',
+  CLOSE_BTN_SELECTOR:        '.video-player_close-btn'
+} );
+
+
+// Private properties.
+var _isIframeLoaded = false;
+var _isIframeLoading = false;
+var _isVideoPlaying = false;
+var _isVideoStopped = true;
+var _this;
+
+/**
+ * VideoPlayer
+ * @class
+ *
+ * @classdesc Base Video Player class.
+ * @param {HTMLNode} element - The DOM element to use as the base element.
+ * @param {object} options - attributes used to extend the video player
+ */
+function VideoPlayer( element, options ) {
+  _this = this;
+  options = options || {};
+  this.baseElement = _ensureElement( element, options.createIFrame );
+  this.iFrameProperties = _assign( _dataSet( this.baseElement ) ||
+    {}, this.iFrameProperties );
+
+  _setChildElements( this.childElements );
+  _initEvents();
+  this.init.apply( this, arguments );
+}
+
+// Static Methods
+
+/**
+* Function used to extend Base Video Player class.
+* @param {object} attributes - attributes assigned to a prototype.
+* @returns {VideoPlayer} A class.
+*/
+VideoPlayer.extend = function extend( attributes ) {
+
+  /**
+  * Function used to create child Video Player class.
+  * @returns {VideoPlayer} An instance.
+  */
+  function child() {
+    this._super = VideoPlayer.prototype;
+    return VideoPlayer.apply( this, arguments );
+  }
+  child.prototype = Object.create( VideoPlayer.prototype );
+  _assign( child.prototype, attributes );
+  child.init = VideoPlayer.init;
+
+  return child;
+};
+
+/**
+* Static method used to initialize class.
+* @param {string} selector - attributes assigned to a prototype.
+* @returns {VideoPlayer} An instance.
+*/
+VideoPlayer.init = function init( selector ) {
+  selector = selector ||
+  '[class*="=' + CLASSES.VIDEO_PLAYER_SELECTOR + '"]:' +
+  'not([class*="' + CLASSES.VIDEO_PLAYER_SELECTOR + '"__"])';
+
+  // There should only be one video player on the page.
+  var videoPlayer;
+  var videoPlayerElement = document.querySelector( selector );
+  if ( videoPlayerElement ) {
+    videoPlayer = new this( videoPlayerElement );
+  }
+
+  return videoPlayer;
+};
+
+// Private Methods.
+
+/**
+* Function used to attach the video iframe.
+* @throws Will throw an error if no iframe element is found.
+* @returns {HTMLNode} A dom element.
+*/
+function _attachIFrame() {
+  var iFrameElement = _this.childElements.iFrame;
+  var iFrameContainerElement = _this.childElements.iFrameContainer;
+
+  if ( _isIframeLoaded === false &amp;&amp; _isIframeLoading === false &amp;&amp;
+    iFrameElement === null ) {
+    iFrameElement = _createElement( 'iframe', _this.iFrameProperties );
+    iFrameElement.classList.add( CLASSES.IFRAME_CLASS_NAME );
+    iFrameElement.setAttribute( 'frameborder', 0 );
+    _this.state.isIframeLoading = true;
+    iFrameElement.onload =
+      function oniFrameLoad() { _this.state.setIsIframeLoaded( true ); };
+    iFrameContainerElement.appendChild( iFrameElement );
+  } else if ( _this.childElements.iframeContainer === null ) {
+    throw new Error( 'No iframe container element found.' );
+  }
+
+  return iFrameElement;
+}
+
+/**
+* Function used to create a dom element.
+* @param {string} tagName - name of the type of dom element to create.
+* @param {obect} properties - attributes used to assign to the element.
+* @returns {HTMLNode} A dom element.
+*/
+function _createElement( tagName, properties ) {
+  var createdElement = document.createElement( tagName );
+  var property;
+  var hasOwnProperty = Object.hasOwnProperty.bind( properties );
+
+  for ( property in properties || {} ) {
+    if ( hasOwnProperty( property ) ) {
+      createdElement.setAttribute( property, properties[property] );
+    }
+  }
+
+  return createdElement;
+}
+
+/**
+* Function used to create a dom element.
+* @param {HTMLNode} domElement - dom selector
+* @param {string} msg - used for Error display.
+* @returns {HTMLNode} A dom element.
+*/
+function _ensureElement( domElement, msg ) {
+  if ( domElement instanceof HTMLElement === false ) {
+    msg = msg || DOM_INVALID;
+    throw new Error( msg );
+  }
+
+  return domElement;
+}
+
+/**
+* Function used to initialize events.
+*/
+function _initEvents() {
+  var playAction = _onAction.bind( _this, 'play' );
+  var stopAction = _onAction.bind( _this, 'stop' );
+
+  _this.childElements.playBtn.addEventListener( 'click', playAction );
+  _this.childElements.closeBtn.addEventListener( 'click', stopAction );
+}
+
+/**
+* Function used to handle video player actions.
+* @param {string} actionType - name of instance method.
+* @param {Event} event - dom event.
+*/
+function _onAction( actionType, event ) {
+  event.preventDefault();
+  event.stopPropagation();
+  if ( typeof this[actionType] === 'function' ) _this[actionType]();
+}
+
+/**
+* Function used to set cached child elements.
+* @param {object} elements - object with child element names.
+* @returns {HTMLNode} An array of dom elements.
+*/
+function _setChildElements( elements ) {
+  var elementName;
+  var hasOwnProperty = Object.hasOwnProperty.bind( _this.childElements );
+  var querySelector = _this.baseElement.querySelector
+    .bind( _this.baseElement );
+
+  for ( elementName in elements ) {
+    if ( hasOwnProperty( elementName ) ) {
+      elements[elementName] = querySelector( elements[elementName] );
+    }
+  }
+
+  return elements;
+}
+
+
+// Public methods.
+
+var API = {
+
+  baseElement: null,
+
+  childElements: {
+    image:           CLASSES.IMAGE_SELECTOR,
+    iFrame:          CLASSES.IFRAME_SELECTOR,
+    iFrameContainer: CLASSES.IFRAME_CONTAINER_SELECTOR,
+    playBtn:         CLASSES.PLAY_BTN_SELECTOR,
+    closeBtn:        CLASSES.CLOSE_BTN_SELECTOR
+  },
+
+  /**
+  * Function used to set cached child elements.
+  */
+  destroy: function destroy() {
+    this.childElements.playBtn.removeEventListener( 'click', this.play );
+    this.childElements.closeBtn.removeEventListener( 'click', this.stop );
+  },
+
+  /**
+  * Function used to embed a script.
+  * @param {string} script - url of script to load.
+  * @param {function} callback - function called when script is loaded.
+  */
+  embedScript: function embedScript( script, callback ) {
+
+    /**
+    * Function called when script is loaded.
+    */
+    function onScriptLoad() { _this.state.isScriptLoading = false; }
+    this.state.isScriptLoading = true;
+    _jsLoader.loadScript( script || this.SCRIPT_API, callback || onScriptLoad );
+  },
+
+  init: _noopFunct,
+
+  iFrameProperties: {
+    allowfullscreen: 'true',
+    scrolling:       'no',
+    src:             '',
+    width:           '100%'
+  },
+
+  state: {
+    isIframeLoading: false,
+    isPlayerInitialized: false,
+    isScriptLoading: false,
+    getIsIframeLoaded: function() {
+      return _isIframeLoaded;
+    },
+    setIsIframeLoaded: function( value ) {
+      if ( value === true ) _isIframeLoading = false;
+      _isIframeLoaded = value;
+    },
+    getIsVideoPlaying: function() {
+      return _isVideoPlaying;
+    },
+    setIsVideoPlaying: function( value ) {
+      if ( value === true ) _isVideoStopped = false;
+      _isVideoPlaying = value;
+    },
+    getIsVideoStopped: function() {
+      return _isVideoStopped;
+    },
+    setIsVideoStopped: function( value ) {
+      if ( value === true ) _isVideoPlaying = false;
+      _isVideoStopped = value;
+    }
+  },
+
+  /**
+  * Function used to play the video player.
+  */
+  play: function play( ) {
+    if ( _isIframeLoaded === false ) {
+      _attachIFrame();
+    }
+    this.baseElement.classList.add( CLASSES.VIDEO_PLAYING_STATE );
+    this.state.setIsVideoPlaying( true );
+  },
+
+  /**
+  * Function used to stop the video player.
+  */
+  stop: function stop( ) {
+    this.baseElement.classList.remove( CLASSES.VIDEO_PLAYING_STATE );
+    this.state.setIsVideoStopped( true );
+  }
+};
+
+_assign( VideoPlayer.prototype, API );
+
+// Expose public methods.
+module.exports = VideoPlayer;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AlphaTransition.html">AlphaTransition</a></li><li><a href="BaseTransition.html">BaseTransition</a></li><li><a href="BreakpointHandler.html">BreakpointHandler</a></li><li><a href="ClearableInput.html">ClearableInput</a></li><li><a href="ContentSlider.html">ContentSlider</a></li><li><a href="EventObserver.html">EventObserver</a></li><li><a href="Expandable.html">Expandable</a></li><li><a href="ExpandableGroup.html">ExpandableGroup</a></li><li><a href="ExternalSite.html">ExternalSite</a></li><li><a href="FilterableListControls.html">FilterableListControls</a></li><li><a href="FlyoutMenu.html">FlyoutMenu</a></li><li><a href="Footer.html">Footer</a></li><li><a href="GlobalBanner.html">GlobalBanner</a></li><li><a href="GlobalSearch.html">GlobalSearch</a></li><li><a href="Header.html">Header</a></li><li><a href="MegaMenu.html">MegaMenu</a></li><li><a href="MegaMenuDesktop.html">MegaMenuDesktop</a></li><li><a href="MegaMenuMobile.html">MegaMenuMobile</a></li><li><a href="MobileCarousel.html">MobileCarousel</a></li><li><a href="MoveTransition.html">MoveTransition</a></li><li><a href="Multiselect.html">Multiselect</a></li><li><a href="Notification.html">Notification</a></li><li><a href="SecondaryNavigation.html">SecondaryNavigation</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreeNode.html">TreeNode</a></li><li><a href="UStreamPlayer.html">UStreamPlayer</a></li><li><a href="VideoPlayer.html">VideoPlayer</a></li><li><a href="YoutubePlayer.html">YoutubePlayer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_attachIFrame">_attachIFrame</a></li><li><a href="global.html#_calculateCollapseDuration">_calculateCollapseDuration</a></li><li><a href="global.html#_calculateExpandDuration">_calculateExpandDuration</a></li><li><a href="global.html#_checkableInput">_checkableInput</a></li><li><a href="global.html#_clearError">_clearError</a></li><li><a href="global.html#_constrainValue">_constrainValue</a></li><li><a href="global.html#_createElement">_createElement</a></li><li><a href="global.html#_createMessage">_createMessage</a></li><li><a href="global.html#_ensureElement">_ensureElement</a></li><li><a href="global.html#_findElements">_findElements</a></li><li><a href="global.html#_getMatchesMethod">_getMatchesMethod</a></li><li><a href="global.html#_getStorageType">_getStorageType</a></li><li><a href="global.html#_getTransitionEndEvent">_getTransitionEndEvent</a></li><li><a href="global.html#_getTransitionPrefix">_getTransitionPrefix</a></li><li><a href="global.html#_inBreakpointRange">_inBreakpointRange</a></li><li><a href="global.html#_init">_init</a></li><li><a href="global.html#_initEvents">_initEvents</a></li><li><a href="global.html#_isPlainObject">_isPlainObject</a></li><li><a href="global.html#_navSecondaryToggle">_navSecondaryToggle</a></li><li><a href="global.html#_navSecondaryToggleTest">_navSecondaryToggleTest</a></li><li><a href="global.html#_onAction">_onAction</a></li><li><a href="global.html#_scrollToTop">_scrollToTop</a></li><li><a href="global.html#_sendError">_sendError</a></li><li><a href="global.html#_sendSubscriptionRequest">_sendSubscriptionRequest</a></li><li><a href="global.html#_setChildElements">_setChildElements</a></li><li><a href="global.html#_tableClicked">_tableClicked</a></li><li><a href="global.html#_toCamelCase">_toCamelCase</a></li><li><a href="global.html#_verifyClassExists">_verifyClassExists</a></li><li><a href="global.html#_verifyElementExists">_verifyElementExists</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#assign">assign</a></li><li><a href="global.html#attach">attach</a></li><li><a href="global.html#backtrack">backtrack</a></li><li><a href="global.html#BEHAVIOR_PREFIX">BEHAVIOR_PREFIX</a></li><li><a href="global.html#bfs">bfs</a></li><li><a href="global.html#bindEvent">bindEvent</a></li><li><a href="global.html#checkBehaviorDom">checkBehaviorDom</a></li><li><a href="global.html#checkbox">checkbox</a></li><li><a href="global.html#checkDom">checkDom</a></li><li><a href="global.html#closest">closest</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dataSet">dataSet</a></li><li><a href="global.html#date">date</a></li><li><a href="global.html#destroyInitFlag">destroyInitFlag</a></li><li><a href="global.html#dfs">dfs</a></li><li><a href="global.html#email">email</a></li><li><a href="global.html#empty">empty</a></li><li><a href="global.html#find">find</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getSiblings">getSiblings</a></li><li><a href="global.html#getViewportDimensions">getViewportDimensions</a></li><li><a href="global.html#handleViewportChange">handleViewportChange</a></li><li><a href="global.html#indexOfObject">indexOfObject</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#INIT_FLAG">INIT_FLAG</a></li><li><a href="global.html#instantiateAll">instantiateAll</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#isDate">isDate</a></li><li><a href="global.html#isDefined">isDefined</a></li><li><a href="global.html#isEmpty">isEmpty</a></li><li><a href="global.html#isFunction">isFunction</a></li><li><a href="global.html#isInDesktop">isInDesktop</a></li><li><a href="global.html#isNumber">isNumber</a></li><li><a href="global.html#isObject">isObject</a></li><li><a href="global.html#isOneExpanded">isOneExpanded</a></li><li><a href="global.html#isString">isString</a></li><li><a href="global.html#isThisExpanded">isThisExpanded</a></li><li><a href="global.html#isUndefined">isUndefined</a></li><li><a href="global.html#JS_HOOK">JS_HOOK</a></li><li><a href="global.html#loadScript">loadScript</a></li><li><a href="global.html#noopFunct">noopFunct</a></li><li><a href="global.html#not">not</a></li><li><a href="global.html#queryOne">queryOne</a></li><li><a href="global.html#radio">radio</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeItem">removeItem</a></li><li><a href="global.html#sendEvent">sendEvent</a></li><li><a href="global.html#sendEvents">sendEvents</a></li><li><a href="global.html#setInitFlag">setInitFlag</a></li><li><a href="global.html#setItem">setItem</a></li><li><a href="global.html#setStorage">setStorage</a></li><li><a href="global.html#STATE_PREFIX">STATE_PREFIX</a></li><li><a href="global.html#stringEscape">stringEscape</a></li><li><a href="global.html#stringMatch">stringMatch</a></li><li><a href="global.html#stringValid">stringValid</a></li><li><a href="global.html#testBreakpoint">testBreakpoint</a></li><li><a href="global.html#toggleExpandedState">toggleExpandedState</a></li><li><a href="global.html#watchWindowResize">watchWindowResize</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Wed Nov 02 2016 08:33:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

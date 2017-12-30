@@ -4,7 +4,7 @@
     
     <url>
      <loc>/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>/installation/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,7 +20,7 @@
     
     <url>
      <loc>/usage/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -28,38 +28,54 @@
     
         
     <url>
+     <loc>/consumer-complaint-database/</loc>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/ask-cfpb/</loc>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
      <loc>/whats-new/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/new-projects/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/branching-merging/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/release-cadence/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/deployment/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/feature-flags/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -69,19 +85,31 @@
         
     <url>
      <loc>/wagtail-migrations/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/django-to-wagtail/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/testing-be/</loc>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>/translation/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>/caching/</loc>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -91,36 +119,22 @@
         
     <url>
      <loc>/atomic-structure/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>/notes-on-atomic-design/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <loc>/testing-fe/</loc>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
-    <url>
-     <loc>/notes-on-frameworks/</loc>
-     <lastmod>2017-09-05</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    
-
-    
-    <url>
-     <loc>/testing/</loc>
-     <lastmod>2017-09-05</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
     
 
     
     <url>
      <loc>/development-tips/</loc>
-     <lastmod>2017-09-05</lastmod>
+     <lastmod>2017-12-30</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

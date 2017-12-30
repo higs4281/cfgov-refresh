@@ -37,7 +37,10 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
       <script src="../js/respond.min.js"></script>
-    <![endif]--> 
+    <![endif]-->
+    <script src="../scripts/scripts/linenumber.js"></script>
+    <script src="../scripts/scripts/prettify/lang-css.js"></script>
+    <script src="../scripts/scripts/prettify/prettify.js"></script> 
 </head>
 
 <body>
@@ -75,6 +78,23 @@
                             
                             <a href="../usage/" class="">Usage</a>
 
+                            
+                        </li>
+                        
+                        <li>
+                            
+                            <span>APIs</span>
+                            <ul class="secondary-nav">
+                                
+                                <li>
+                                    <a href="../consumer-complaint-database/" class="">Consumer complaint database</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../ask-cfpb/" class="">Ask cfpb</a>
+                                </li>
+                                
+                            </ul>
                             
                         </li>
                         
@@ -125,7 +145,15 @@
                                 </li>
                                 
                                 <li>
+                                    <a href="../testing-be/" class="">Testing</a>
+                                </li>
+                                
+                                <li>
                                     <a href="../translation/" class="">Translation</a>
+                                </li>
+                                
+                                <li>
+                                    <a href="../caching/" class="">Caching</a>
                                 </li>
                                 
                             </ul>
@@ -142,21 +170,10 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="../notes-on-atomic-design/" class="">Notes on adapting atomic design</a>
-                                </li>
-                                
-                                <li>
-                                    <a href="../notes-on-frameworks/" class="">Notes on frameworks</a>
+                                    <a href="../testing-fe/" class="">Testing</a>
                                 </li>
                                 
                             </ul>
-                            
-                        </li>
-                        
-                        <li>
-                            
-                            <a href="../testing/" class="">Testing</a>
-
                             
                         </li>
                         
@@ -174,20 +191,19 @@
             <section id="main" class="main-content" role="main">
                 <h1 id="installation-and-configuration-for-cfgov-refresh">Installation and configuration for cfgov-refresh</h1>
 <h2 id="clone-the-repository">Clone the repository</h2>
-<p>Using the console, navigate to the root directory in which your projects live and clone this project's repository:</p>
+<p>Using the console, navigate to the root directory in which your projects
+live and clone this project's repository:</p>
 <pre class="highlight"><code class="language-bash linenums">git clone git@github.com:cfpb/cfgov-refresh.git
 cd cfgov-refresh</code></pre>
 
-<p>You may also wish to fork the repository on GitHub and clone the resultant personal fork. This is advised if you are going to be doing development on <code>cfgov-refresh</code> and contributing to the project.</p>
+<p>You may also wish to fork the repository on GitHub and clone the resultant
+personal fork. This is advised if you are going to be doing development on
+<code>cfgov-refresh</code> and contributing to the project.</p>
 <p>There are two ways to install cfgov-refresh:</p>
 <ul>
 <li><a href="#stand-alone-installation">Stand-alone installation</a></li>
-<li><a href="#vagrant-box-installation">Vagrant-box installation</a></li>
+<li><a href="#docker-compose-installation">Docker-compose installation</a></li>
 </ul>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>The instruction for Vagrant are not currently working.</p>
-</div>
 <h2 id="stand-alone-installation">Stand-alone installation</h2>
 <p>These instructions are somewhat specific to developing on Mac OS X,
 but if you're familiar with other Unix-based systems,
@@ -284,8 +300,19 @@ using <code>launchctl</code> instead of <code>brew services</code>.</p>
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This project requires Node.js v5.5 or higher, and npm v3 or higher.</p>
+<p>This project requires Node.js v8 or higher, and npm v5 or higher.</p>
 </div>
+<h4 id="webfonts">Webfonts</h4>
+<p>The site uses a proprietary licensed font, Avenir.
+If you want to pull this from a content delivery network (CDN),
+you can set the
+<a href="https://github.com/cfpb/cfgov-refresh/blob/master/cfgov/unprocessed/css/main.less#L30"><code>@use-font-cdn</code></a>
+to <code>true</code> and rebuild the assets with <code>gulp build</code>.
+If you want to install self-hosted fonts locally, you can place the font files
+in <code>static.in/cfgov-fonts/fonts/</code> and restart the local web server.
+If you are a CFPB employee, you can perform this step with:</p>
+<p><pre class="highlight"><code class="linenums">cd static.in/ &amp;&amp; git clone https://[GHE]/CFGOV/cfgov-fonts/</code></pre>
+Where <code>[GHE]</code> is our GitHub Enterprise URL.</p>
 <h4 id="set-up-your-environment">Set up your environment</h4>
 <p>If this is the first time you're setting up the project, run the following
 script to copy <code>.env_SAMPLE</code> to <code>.env</code>, export your environment variables,
@@ -321,49 +348,64 @@ that you may want to perform before continuing.</p>
 <a href="#curious-about-what-the-setup-scripts-are-doing">Read the detailed rundown.</a></p>
 <p>Get any errors? <a href="#troubleshooting">See our troubleshooting tips.</a></p>
 <p><strong>Continue following the <a href="../usage">usage instructions</a>.</strong></p>
-<h2 id="vagrant-box-installation">Vagrant-box installation</h2>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>These instructions are not currently working, but we'd like to get them working soon. <a href="../contributing">PRs welcome</a>.</p>
-</div>
-<h3 id="1-environment-variables-setup">1. Environment variables setup</h3>
-<p>The project uses a number of environment variables.
-The <code>setup.sh</code> script will create a <code>.env</code> file for you
-from the <code>.env_SAMPLE</code> file found in the repository,
-if you don't already have one.</p>
-<p>Inside the <code>.env</code> file you can customize the project environment configuration.</p>
-<p>If you would like to manually copy the environment settings,
-copy the <code>.env_SAMPLE</code> file and un-comment each variable after
-adding your own values.
-<pre class="highlight"><code class="language-bash linenums">cp -a .env_SAMPLE .env &amp;&amp; open -t .env</code></pre></p>
-<p>Then load the environment variables with:
-<pre class="highlight"><code class="language-bash linenums">. ./.env</code></pre></p>
-<h3 id="2-fetch-extra-playbooks">2. Fetch extra playbooks</h3>
-<p>The project pulls together various open source and closed source plays. The plays are
-managed through ansible-galaxy, a core module for this exact purpose. To download all
-the dependencies, use this command:</p>
-<pre class="highlight"><code class="language-bash linenums">ansible-galaxy install -r ansible/requirements.yml</code></pre>
+<h2 id="docker-compose-installation">Docker-compose installation</h2>
+<h3 id="tools-we-use-for-developing-with-docker">Tools we use for developing with Docker</h3>
+<ul>
+<li><strong>Docker</strong>: You may not need to interact directly with Docker: but you
+  should know that it's a client/server application for managing "containers"
+  (a way of running software in an isolated environment) and "images" (a
+  snapshot of all of the files neccessary to run a container).</li>
+<li><strong>Docker Compose</strong>: Compose allows you to configure and run a collection of
+  connected containers (like a web application and it's database)</li>
+<li><strong>Docker Machine</strong>: Docker only runs natively on Linux and Windows. On OS X,
+  we'll use Docker Machine to start the Docker server in a virtual linux
+  environment (using Virtualbox)</li>
+</ul>
+<h3 id="1-setup-your-docker-environment">1. Setup your Docker environment</h3>
+<p>If you have never installed Docker before, follow the instructions
+<a href="https://docs.docker.com/engine/installation/">here</a> or from your operating
+system vendor. If you are on a mac and are unable to install the official
+"Docker for Mac" package, the quickstart instructions below might help.</p>
+<p>If you are on a machine that is already set up to run Linux docker containers,
+please install <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.
+If <code>docker-compose ps</code> runs without error, you can can go to step 2.</p>
+<h4 id="mac-homebrew-virtualbox-quickstart">Mac + Homebrew + Virtualbox quickstart</h4>
+<p><strong>Starting assumptions</strong>: You already have homebrew and virtualbox installed.
+You can run <code>brew search docker</code> without error.</p>
+<p>Install Docker, Docker Machine, and Docker Compose:
+<code>brew install docker docker-compose docker-machine</code></p>
+<p>At this point, <code>docker-compose ps</code> should run without error.</p>
+<h3 id="2-setup-your-frontend-environment">2. Setup your frontend environment</h3>
+<p>Refer to the <a href="#front-end-dependencies">front-end dependencies</a> described above
+in the <a href="#stand-alone-installation">standalone installation instructions</a>.</p>
+<h3 id="3-run-setup">3. Run setup</h3>
+<p><code>./setup.sh docker</code></p>
+<p>This will install and build the frontend and set up the docker environment.</p>
+<h3 id="4-run-the-for-the-first-time">4. Run the for the first time</h3>
+<p><code>./runserver.sh docker</code></p>
+<p>This will download and/or build images, and then start the containers, as
+described in the docker-compose.yml file. This will take a few minutes, or
+longer if you are on a slow internet connection.</p>
+<p>When it's all done, you should be able to load <a href="http://localhost:8000">http://localhost:8000</a> in your
+browser, and see a database error.</p>
+<h3 id="3-setup-the-database">3. Setup the database</h3>
+<p>Run <code>./shell.sh</code>. This opens a bash shell inside your Python container.</p>
+<p>You can either <a href="#load-initial-data-into-database">load initial data</a> per the
+instructions below, or load a database dump.</p>
+<p>You could save some time and effort later (if you have access to the CFPB
+network), by configuring a URL for database dumps in the <code>.python_env</code> file.</p>
+<pre class="highlight"><code class="linenums">CFGOV_PROD_DB_LOCATION=https://(rest of the URL)</code></pre>
 
-<h3 id="3-launch-vagrant-virtual-environment">3. Launch Vagrant virtual environment</h3>
-<p>The project uses Vagrant to create the simulated virtual environment allowing the developer
-to work on a production-like environment while maintaining development work on the
-local machine. To create this virtual environment, you need to execute the following command.</p>
-<pre class="highlight"><code class="language-bash linenums">vagrant up</code></pre>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Please be patient the first time you run this step.</p>
-</div>
-<h3 id="4-front-end-tools">4. Front-end Tools</h3>
-<p>In order to run the application, we must generate the front-end assets.
-After running the following commands, visit <a href="http://localhost:8001">http://localhost:8001</a> to see the site running.
-You can also place the first two export commands into your <code>.bashrc</code> to simplify things later.</p>
-<pre class="highlight"><code class="language-bash linenums">export CFGOV_HOME=path/to/cfgov-refresh
-export PATH=$PATH:$CFGOV_HOME/bin
-cfgov init
-cfgov assets
-cfgov start django</code></pre>
-
+<p>You can get that URL at
+[GHE]/CFGOV/platform/wiki/Database-downloads#resources-available-via-s3</p>
+<p>With <code>CFGOV_PROD_DB_LOCATION</code> in <code>.python_env</code> you should be able to run:</p>
+<p><code>./refresh-data.sh</code></p>
+<p>Otherwise, <a href="#load-a-database-dump">the instructions to load a database dump</a>
+below should be enough to get you started.</p>
+<p>Once you have a database loaded, you should have a functioning copy of site
+working at <a href="http://localhost:8000"><a href="http://localhost:8000">http://localhost:8000</a></a></p>
+<h3 id="4-next-steps">4. Next Steps</h3>
+<p>See the Docker section of the <a href="../usage">usage</a> page to continue after that.</p>
 <h2 id="optional-steps">Optional steps</h2>
 <h3 id="load-initial-data-into-database">Load initial data into database</h3>
 <p>The <code>initial-data.sh</code> script can be used to initialize a new database to make
@@ -374,8 +416,13 @@ migrations are applied to the database, and then does the following:</p>
 <code>WAGTAIL_ADMIN_PW</code> environment variable, if set.</li>
 <li>If it doesn't already exist, creates a new Wagtail home page named <code>CFGOV</code>,
 with a slug of <code>cfgov</code>.</li>
-<li>Updates the default Wagtail site to use the port defined by the <code>DJANGO_HTTP_PORT</code> environment variable, if defined; otherwise this port is set to 80.</li>
-<li>If it doesn't already exist, creates a new <a href="https://github.com/cfpb/wagtail-sharing">wagtail-sharing</a> <code>SharingSite</code> with a hostname and port defined by the <code>DJANGO_STAGING_HOSTNAME</code> and <code>DJANGO_HTTP_PORT</code> environment variables.</li>
+<li>Updates the default Wagtail site to use the port defined by the
+<code>DJANGO_HTTP_PORT</code> environment variable, if defined; otherwise this port is
+set to 80.</li>
+<li>If it doesn't already exist, creates a new
+<a href="https://github.com/cfpb/wagtail-sharing">wagtail-sharing</a> <code>SharingSite</code> with
+a hostname and port defined by the <code>DJANGO_STAGING_HOSTNAME</code> and
+<code>DJANGO_HTTP_PORT</code> environment variables.</li>
 </ul>
 <h3 id="load-a-database-dump">Load a database dump</h3>
 <p>If you're installing this fresh, the initial data you receive will not be
@@ -383,21 +430,20 @@ as extensive as you'd probably like it to be.</p>
 <p>You can get a database dump by:</p>
 <ol>
 <li>Going to [GHE]/CFGOV/platform/wiki/Database-downloads</li>
-<li>Selecting one of the extractions and downloading the <code>production_django.sql.gz</code> file</li>
+<li>Selecting one of the extractions and downloading the
+   <code>production_django.sql.gz</code> file</li>
 <li>Unzip it</li>
 <li>Run:</li>
 </ol>
 <pre class="highlight"><code class="language-bash linenums">./refresh-data.sh /path/to/dump.sql</code></pre>
 
-<p>The <code>refresh-data.sh</code> script will apply the same changes as the <code>initial-data.sh</code> script described above (including setting up the <code>admin</code> superuser), but will not apply migrations.</p>
+<p>The <code>refresh-data.sh</code> script will apply the same changes as the
+<code>initial-data.sh</code> script described above (including setting up the <code>admin</code>
+superuser), but will not apply migrations.</p>
 <p>To apply any unapplied migrations to a database created from a dump, run:</p>
 <pre class="highlight"><code class="language-bash linenums">python cfgov/manage.py migrate</code></pre>
 
-<h3 id="install-dependencies-for-working-with-the-govdelivery-api">Install dependencies for working with the GovDelivery API</h3>
-<p>Install the following GovDelivery dependencies into your virtual environment:</p>
-<pre class="highlight"><code class="language-bash linenums">pip install git+git://github.com/dpford/flask-govdelivery
-pip install git+git://github.com/rosskarchner/govdelivery</code></pre>
-
+<h3 id="set-variables-for-working-with-the-govdelivery-api">Set variables for working with the GovDelivery API</h3>
 <p>Uncomment and set the GovDelivery environment variables in your <code>.env</code> file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -414,19 +460,32 @@ Users may decide to swap this tool out for another third-party service.</p>
 <p>This script first checks for an argument passed from the command line
    that can trigger different options for different environments.
    Since you ran it with no arguments, it will set up the dev environment.</p>
-<p>It will then set some env vars for the Node and Bower dependency directories.
-1. <strong>Clean project dependencies</strong> (<code>clean</code>)</p>
-<p>The script will now empty out all installed dependencies,
-   so the new installation can start fresh.
-1. <strong>Install project dependencies</strong> (<code>install</code>)</p>
-<p>Node and Bower dependencies are installed.
-   The <code>devDependencies</code> from <code>package.json</code> are not installed
+<p>It then creates a checksum for <code>package-lock.json</code> (if it exists) and
+   <code>package.json</code>.
+   This will be used later to determine if dependencies need to be installed.</p>
+<p>It will then set some env vars for the Node dependency directories.
+1. <strong>Clean and install project dependencies</strong> (<code>clean_and_install</code>)</p>
+<p>The script will now compare the checksums to see if it needs to install
+   dependencies, or if they are already up-to-date.</p>
+<p>If the checksums do not match, the script will empty out all installed
+   dependencies (<code>clean</code>) so the new installation can start fresh,
+   then install the latest requested dependencies (<code>install</code>).</p>
+<p>The <code>devDependencies</code> from <code>package.json</code> are not installed
    if the environment is production, and if it's the dev or test environment,
-   it checks to see if Protractor is globally installed.
+   it checks to see if Protractor is globally installed.</p>
+<p>Finally, it creates a new checksum for future comparisons.
 1. <strong>Run tasks to build the project for distribution</strong> (<code>build</code>)</p>
-<p>Finally, the script executes <code>gulp clean</code> to wipe out any lingering
-   <code>dist</code> files, then runs <code>gulp build</code> to rebuild everything.</p>
+<p>Finally, the script runs <code>gulp build</code> to rebuild the front-end assets.
+   It no longer cleans first, because the gulp-changed plugin prevents
+   rebuilding assets that haven't changed since the last build.</p>
+<p>If this is the production environment, it also triggers style and script
+   builds for <code>ondemand</code> and <code>nemo</code>, which aren't part of a standard
+   <code>gulp build</code>.</p>
 <h3 id="2-backendsh">2. <code>backend.sh</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>backend.sh</code> is not used for our Docker setup.</p>
+</div>
 <ol>
 <li><strong>Confirm environment</strong> (<code>init</code>)</li>
 </ol>
