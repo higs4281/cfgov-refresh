@@ -211,12 +211,12 @@ You can use our API to search this database, in English or Spanish.</p>
 <li>Student loans</li>
 </ul>
 <h2 id="usage">Usage</h2>
-<p>The API is a read-only resource that delivers search results in <a href="https://www.json.org/">json</a> format. You can search for questions and answers by terms and receive a list of question/answer pairs and their URL at the CFPB.</p>
-<p>Requests follow this URL pattern:</p>
+<p>The API is a read-only search resource that delivers search results in <a href="https://www.json.org/">json</a> format. You can send search terms and receive a list of question/answer pairs.</p>
+<p>Requests follow this pattern:</p>
 <ul>
 <li><code>https://www.consumerfinance.gov/ask-cfpb/search/json/?q=[SEARCH TERMS]</code></li>
 </ul>
-<p>You'll get back a json response that includes a list of results. The payload for the search term "tuition" would look like this, but with more result entries:</p>
+<p>You'll get back a json response that includes a list of results, each with a question, an answer and a URL for the related page at the CFPB. The payload for the search term "tuition" would look like this, but with more result entries:</p>
 <pre class="highlight"><code class="language-json linenums">{
   query: &quot;tuition&quot;,
   result_query: &quot;tuition&quot;,
@@ -230,7 +230,7 @@ You can use our API to search this database, in English or Spanish.</p>
 }</code></pre>
 
 <h2 id="spanish-content">Spanish content</h2>
-<p>For questions and answers in Spanish, requests should follow this URL pattern:</p>
+<p>For questions and answers in Spanish, requests should follow this pattern:</p>
 <ul>
 <li><code>https://www.consumerfinance.gov/es/obtener-respuestas/buscar/json/?q=[SPANISH SEARCH TERMS]</code></li>
 </ul>
