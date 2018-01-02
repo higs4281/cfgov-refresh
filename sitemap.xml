@@ -124,11 +124,19 @@
     
 
     
+        
     <url>
-     <loc>/refresh-apis/</loc>
+     <loc>/ask-cfpb/</loc>
      <lastmod>2018-01-02</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>/consumer-complaint-database/</loc>
+     <lastmod>2018-01-02</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
 </urlset>
