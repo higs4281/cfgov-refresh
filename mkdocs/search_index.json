@@ -877,12 +877,12 @@
         }, 
         {
             "location": "/refresh-apis/", 
-            "text": "CFPB APIs\n\n\nThe consumerfinance.gov website includes several APIs \u2013 application-programmer interfaces \u2013 that enable automated retrieval of public data.\n\n\nAsk CFPB\n\n\nThis API provides access to the data behind \nAsk CFPB\n, via search terms.\n\n\n\n\nAsk CFPB API documentation\n\n\n\n\nConsumer complaint database\n\n\nEach week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are \npublished\n on our website after the company responds or after 15 days, whichever comes first.\n\n\nThe API allows the same filtering and searching functions offered to website visitors.\n\n\n\n\nComplaint search API documentation", 
+            "text": "CFPB APIs\n\n\nThe \nconsumerfinance.gov\n website includes several APIs \u2013 application programming interfaces \u2013 that enable automated retrieval of public data.\n\n\nAsk CFPB\n\n\nThis API provides access to the data behind \nAsk CFPB\n, via search terms.\n\n\n\n\nAsk CFPB API documentation\n\n\n\n\nConsumer complaint database\n\n\nEach week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are \npublished\n on our website after the company responds or after 15 days, whichever comes first.\n\n\nThe API allows the same filtering and searching functions offered to website visitors.\n\n\n\n\nComplaint search API documentation", 
             "title": "APIs"
         }, 
         {
             "location": "/refresh-apis/#cfpb-apis", 
-            "text": "The consumerfinance.gov website includes several APIs \u2013 application-programmer interfaces \u2013 that enable automated retrieval of public data.", 
+            "text": "The  consumerfinance.gov  website includes several APIs \u2013 application programming interfaces \u2013 that enable automated retrieval of public data.", 
             "title": "CFPB APIs"
         }, 
         {
