@@ -877,7 +877,7 @@
         }, 
         {
             "location": "/refresh-apis/", 
-            "text": "CFPB APIs\n\n\nThe \nconsumerfinance.gov\n website includes several APIs \u2013 application programming interfaces \u2013 that enable automated retrieval of public data.\n\n\nAsk CFPB\n\n\nThis API provides access to the data behind \nAsk CFPB\n, via search terms.\n\n\n\n\nAsk CFPB API documentation\n\n\n\n\nConsumer complaint database\n\n\nEach week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are \npublished\n on our website after the company responds or after 15 days, whichever comes first.\n\n\nThe API allows the same filtering and searching functions offered to website visitors.\n\n\n\n\nComplaint search API documentation", 
+            "text": "CFPB APIs\n\n\nThe \nconsumerfinance.gov\n website includes several APIs \u2013 application programming interfaces \u2013 that enable automated retrieval of public data.\n\n\nAsk CFPB\n\n\nThis API provides search access to the English and Spanish data behind \nAsk CFPB\n.\n\n\n\n\nAsk CFPB API documentation\n\n\n\n\nConsumer complaint database\n\n\nEach week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are \npublished\n on our website after the company responds or after 15 days, whichever comes first.\n\n\nThe API allows automation of the same filtering and searching functions offered to website visitors.\n\n\n\n\nComplaint search API documentation", 
             "title": "APIs"
         }, 
         {
@@ -887,12 +887,12 @@
         }, 
         {
             "location": "/refresh-apis/#ask-cfpb", 
-            "text": "This API provides access to the data behind  Ask CFPB , via search terms.   Ask CFPB API documentation", 
+            "text": "This API provides search access to the English and Spanish data behind  Ask CFPB .   Ask CFPB API documentation", 
             "title": "Ask CFPB"
         }, 
         {
             "location": "/refresh-apis/#consumer-complaint-database", 
-            "text": "Each week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are  published  on our website after the company responds or after 15 days, whichever comes first.  The API allows the same filtering and searching functions offered to website visitors.   Complaint search API documentation", 
+            "text": "Each week the CFPB sends thousands of consumers\u2019 complaints about financial products and services to companies for response. Those complaints are  published  on our website after the company responds or after 15 days, whichever comes first.  The API allows automation of the same filtering and searching functions offered to website visitors.   Complaint search API documentation", 
             "title": "Consumer complaint database"
         }
     ]
