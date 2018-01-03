@@ -37,7 +37,10 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
       <script src="../js/respond.min.js"></script>
-    <![endif]--> 
+    <![endif]-->
+    <script src="../swagger/swagger-ui-bundle.js"></script>
+    <script src="../swagger/swagger-ui-standalone-preset.js"></script>
+    <script src="../swagger/swagger-ui.js"></script> 
 </head>
 
 <body>
@@ -174,7 +177,7 @@
                                 </li>
                                 
                                 <li>
-                                    <a href="../consumer-complaint-database/" class="">Consumer complaints</a>
+                                    <a href="../consumer-complaint-database/" class="">Consumer Complaint Database</a>
                                 </li>
                                 
                             </ul>
@@ -186,9 +189,11 @@
             </aside>
 
             <section id="main" class="main-content" role="main">
-                <h1 id="ask-cfpb-api">Ask CFPB API</h1>
-<p>This API provides search access to the English and Spanish content behind <a href="https://www.consumerfinance.gov/ask-cfpb/">Ask CFPB</a> and <a href="https://www.consumerfinance.gov/es/obtener-respuestas/">Obtener respuestas</a>.</p>
-<p>The financial topics covered include:  </p>
+                <h1 id="ask-cfpb">Ask CFPB</h1>
+<h3 id="a-resource-for-questions-about-financial-products">A resource for questions about financial products</h3>
+<p>Our <a href="https://www.consumerfinance.gov/ask-cfpb/">Ask CFPB</a> database contains clear, impartial answers to hundreds of financial questions.<br />
+You can use our API to search this database, in English or Spanish.</p>
+<p>Topics covered include:  </p>
 <ul>
 <li>Auto loans</li>
 <li>Bank accounts and services</li>
@@ -202,18 +207,15 @@
 <li>Prepaid cards</li>
 <li>Student loans</li>
 </ul>
-<h2 id="usage"><code>Usage</code></h2>
-<p>The API is a read-only resource that delivers search results in <a href="https://www.json.org/">json</a> format.</p>
+<h2 id="usage">Usage</h2>
+<p>The API is a read-only search resource that delivers search results in <a href="https://www.json.org/">json</a> format. You can send search terms and receive a list of question/answer pairs.</p>
 <p>Requests follow this pattern:</p>
 <ul>
 <li><code>https://www.consumerfinance.gov/ask-cfpb/search/json/?q=[SEARCH TERMS]</code></li>
 </ul>
-<p>The json response will includes a list of results, each with a question, an answer, and a URL for the related CFPB page. 
-If no results are found, the "suggestion" field will offer a more promising search term if one can be found.</p>
-<p>The payload for the search term "tuition" would look like this, but with more result entries:</p>
+<p>You'll get back a json response that includes a list of results, each with a question, an answer, and a URL for the related CFPB pag. The payload for the search term "tuition" would look like this, but with more result entries:</p>
 <pre class="highlight"><code class="language-json linenums">{
   query: &quot;tuition&quot;,
-  suggestion: null,
   result_query: &quot;tuition&quot;,
   results: [
     {
@@ -232,7 +234,6 @@ If no results are found, the "suggestion" field will offer a more promising sear
 <p>The payload for the Spanish search term "vehiculo" would look like this, but with more result entries:</p>
 <pre class="highlight"><code class="language-json linenums">{
   query: &quot;vehiculo&quot;,
-  suggestion: null,
   result_query: &quot;vehiculo&quot;,
   results: [
     {
